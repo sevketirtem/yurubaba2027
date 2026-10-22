@@ -1,0 +1,7 @@
+{{ if gt .TotalPages 1 }}
+<nav class="pager" aria-label="Sayfalar">
+  {{ with .Prev }}<a href="{{ .URL }}">← Daha yeni</a>{{ end }}
+  <span>{{ .PageNumber }} / {{ .TotalPages }}</span>
+  {{ with .Next }}<a href="{{ .URL }}">Daha eski →</a>{{ end }}
+</nav>
+{{ end }}

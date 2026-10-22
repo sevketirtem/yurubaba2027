@@ -1,0 +1,22 @@
+{{ define "main" }}
+  {{ $posts := where site.RegularPages "Section" "posts" }}
+  {{ $pager := .Paginate $posts }}
+  {{ with index $pager.Pages 0 }}
+    {{ if eq $pager.PageNumber 1 }}
+    <section class="lead">
+      <p class="meta">
+        {{ range first 1 (.GetTerms "kategoriler") }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+        {{ partial "pubtime.html" . }}
+      </p>
+      <h1><a href="{{ .RelPermalink }}">{{ .Title }}</a></h1>
+      <p class="summary">{{ .Summary | plainify | truncate 280 }}</p>
+    </section>
+    {{ end }}
+  {{ end }}
+  <section class="grid">
+    {{ range $i, $p := $pager.Pages }}
+      {{ if or (gt $i 0) (gt $pager.PageNumber 1) }}{{ partial "post-card.html" $p }}{{ end }}
+    {{ end }}
+  </section>
+  {{ partial "pager.html" $pager }}
+{{ end }}

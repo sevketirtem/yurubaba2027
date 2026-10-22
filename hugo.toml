@@ -1,0 +1,54 @@
+baseURL = "https://yurubaba.com/"
+languageCode = "tr"
+defaultContentLanguage = "tr"
+title = "Yürü Baba"
+timeZone = "Europe/Istanbul"
+enableRobotsTXT = true
+summaryLength = 40
+
+[pagination]
+  pagerSize = 10
+
+[taxonomies]
+  kategori = "kategoriler"
+
+[permalinks]
+  [permalinks.page]
+    posts = "/:year/:month/:contentbasename/"
+
+[params]
+  slogan = "Hadi'ye inanma, gerçekleri biz yazarız."
+  description = "Türk futbolunu soğukkanlı, istatistikle ve kuru mizahla yorumlayan site. Ekim'de şampiyon olunmaz."
+  # Tema renkleri: iki site aynı iskeleti, farklı renklerle kullanır
+  accent = "#1f3a5f"
+  accentInk = "#ffffff"
+  # Sahnedeki rakip
+  rivalName = "Hadi Baba"
+  rivalURL = "https://hadibaba.com/"
+  rivalJab = "Pembe gözlükle futbol izlemek isteyenler için:"
+  closingQuestion = "Siz ne diyorsunuz? Rakamla gelin, yorumlara yazın."
+
+[menus]
+  [[menus.main]]
+    name = "Maç Önü"
+    url = "/kategoriler/mac-onu/"
+    weight = 1
+  [[menus.main]]
+    name = "Maç Sonu"
+    url = "/kategoriler/mac-sonu/"
+    weight = 2
+  [[menus.main]]
+    name = "Transfer Kulisi"
+    url = "/kategoriler/transfer-kulisi/"
+    weight = 3
+  [[menus.main]]
+    name = "Hadi'ye Cevap"
+    url = "/kategoriler/hadiye-cevap/"
+    weight = 4
+  [[menus.main]]
+    name = "Hakkında"
+    url = "/hakkinda/"
+    weight = 5
+
+[markup.goldmark.renderer]
+  unsafe = false

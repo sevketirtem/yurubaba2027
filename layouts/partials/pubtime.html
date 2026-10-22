@@ -1,0 +1,4 @@
+{{- /* Kopya kavgası için yayın saati her yazıda görünür */ -}}
+{{- $aylar := slice "Ocak" "Şubat" "Mart" "Nisan" "Mayıs" "Haziran" "Temmuz" "Ağustos" "Eylül" "Ekim" "Kasım" "Aralık" -}}
+{{- $d := .Date -}}
+<time datetime="{{ $d.Format "2006-01-02T15:04:05-07:00" }}">{{ $d.Day }} {{ index $aylar (sub (int $d.Month) 1) }} {{ $d.Year }}, {{ $d.Format "15.04" }}</time>

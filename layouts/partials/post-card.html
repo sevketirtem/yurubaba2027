@@ -1,0 +1,8 @@
+<article class="card">
+  <p class="meta">
+    {{ range first 1 (.GetTerms "kategoriler") }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+    {{ partial "pubtime.html" . }}
+  </p>
+  <h2 class="card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+  <p class="summary">{{ .Summary | plainify | truncate 220 }}</p>
+</article>

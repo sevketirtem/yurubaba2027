@@ -1,0 +1,11 @@
+{{ define "main" }}
+  <header class="list-head">
+    <h1>{{ .Title }}</h1>
+    {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  </header>
+  {{ $pager := .Paginate .Pages }}
+  <section class="grid">
+    {{ range $pager.Pages }}{{ partial "post-card.html" . }}{{ else }}<p class="empty">Bu köşe henüz boş. Az kaldı baba!</p>{{ end }}
+  </section>
+  {{ partial "pager.html" $pager }}
+{{ end }}

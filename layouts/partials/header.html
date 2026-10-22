@@ -1,0 +1,15 @@
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="brand" href="{{ "/" | relURL }}">
+      <span class="brand-name">{{ site.Title }}</span>
+      <span class="brand-slogan">{{ site.Params.slogan }}</span>
+    </a>
+  </div>
+  <nav class="nav" aria-label="Ana menü">
+    <div class="wrap nav-inner">
+      {{ range site.Menus.main }}
+        <a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a>
+      {{ end }}
+    </div>
+  </nav>
+</header>
