@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sitenin yeni yazılarını Bluesky hesabında paylaşır.
+"""Sitenin yeni yazılarını Bluesky hesabında (ve varsa Telegram kanalında) paylaşır.
 
 Nasıl çalışır:
   1. Yayındaki sitenin RSS akışını (index.xml) okur; yalnızca yazıları alır
@@ -19,6 +19,13 @@ Ortam değişkenleri:
   EN_FAZLA               Bir çalışmada en fazla kaç gönderi (varsayılan 3)
   ETIKETLER              Gönderi sonuna eklenecek etiketler (varsayılan "#futbol")
   DRY_RUN                "true" ise hiçbir şey paylaşmaz, sadece ne yapacağını yazar
+  TELEGRAM_BOT_TOKEN     @BotFather'ın verdiği token (GitHub secret; yoksa Telegram atlanır)
+  TELEGRAM_CHANNEL       Kanal adı, ör. @hadibaba (GitHub secret)
+  TELEGRAM_KONTROL       "true" ise hiçbir şey paylaşmaz; sadece botun kanala
+                         yönetici olarak eklendiğini ve mesaj atabildiğini kontrol eder
+
+Telegram ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da ilk kez
+paylaşıldığı anda Telegram kanalına da gönderilir.
 
 Yalnızca Python standart kütüphanesi kullanılır; kurulacak paket yok.
 """
@@ -151,6 +158,48 @@ def gonderi_olustur(yazi, aciklama, etiketler):
     return kayit
 
 
+def telegram_api(token, metot, veri):
+    url = f"https://api.telegram.org/bot{token}/{metot}"
+    req = urllib.request.Request(url, data=urllib.parse.urlencode(veri).encode(),
+                                 headers={"User-Agent": UA}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.loads(r.read())["result"]
+    except urllib.error.HTTPError as e:
+        aciklama = json.loads(e.read() or b"{}").get("description", "")
+        # Hata mesajında token görünmesin diye adresi yazmıyoruz
+        raise RuntimeError(f"Telegram {metot} -> HTTP {e.code}: {aciklama}") from None
+
+
+def telegram_mesaji(yazi, aciklama):
+    satirlar = [f"<b>{html.escape(yazi['baslik'], quote=False)}</b>"]
+    if aciklama:
+        satirlar.append(html.escape(aciklama, quote=False))
+    satirlar.append(f'👉 <a href="{html.escape(yazi["adres"], quote=True)}">Yazının tamamı</a>')
+    return "\n\n".join(satirlar)
+
+
+def telegram_gonder(token, kanal, yazi, aciklama):
+    return telegram_api(token, "sendMessage", {
+        "chat_id": kanal,
+        "text": telegram_mesaji(yazi, aciklama),
+        "parse_mode": "HTML",
+        "link_preview_options": json.dumps({"url": yazi["adres"], "prefer_large_media": True}),
+    })
+
+
+def telegram_kontrol(token, kanal):
+    bot = telegram_api(token, "getMe", {})
+    sohbet = telegram_api(token, "getChat", {"chat_id": kanal})
+    uye = telegram_api(token, "getChatMember", {"chat_id": kanal, "user_id": bot["id"]})
+    yazabilir = uye.get("status") == "creator" or uye.get("can_post_messages")
+    durum = "mesaj atabilir ✅" if yazabilir else "MESAJ ATAMAZ ❌ (yöneticilikte 'Mesaj gönderme' iznini aç)"
+    print(f"::notice title=Telegram kontrolü::Bot @{bot['username']} → {sohbet.get('title')} "
+          f"({kanal}), yetki: {uye.get('status')}, {durum}")
+    if not yazabilir:
+        sys.exit(1)
+
+
 def main():
     feed = os.environ.get("SITE_FEED", "").strip()
     handle = os.environ.get("BLUESKY_HANDLE", "").strip()
@@ -159,6 +208,16 @@ def main():
     en_fazla = int(os.environ.get("EN_FAZLA", "3"))
     etiketler = os.environ.get("ETIKETLER", "#futbol").strip()
     dry_run = os.environ.get("DRY_RUN", "").lower() == "true"
+    tg_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    tg_kanal = os.environ.get("TELEGRAM_CHANNEL", "").strip()
+    if tg_kanal and not tg_kanal.startswith("@") and not tg_kanal.lstrip("-").isdigit():
+        tg_kanal = "@" + tg_kanal.split("/")[-1]  # "t.me/hadibaba" veya "hadibaba" yazılmışsa
+
+    if os.environ.get("TELEGRAM_KONTROL", "").lower() == "true":
+        if not tg_token or not tg_kanal:
+            sys.exit("TELEGRAM_BOT_TOKEN / TELEGRAM_CHANNEL secret'ları yok.")
+        telegram_kontrol(tg_token, tg_kanal)
+        return
 
     if not feed:
         sys.exit("SITE_FEED tanımlı değil.")
@@ -178,19 +237,31 @@ def main():
     print(f"::notice::Giriş başarılı ({handle}); {len(eski)} paylaşılmış bağlantı bulundu.")
     yeni = [y for y in adaylar if y["adres"].rstrip("/") not in eski][:en_fazla]
     if not yeni:
-        print(f"::notice::Giriş başarılı ({handle}). Paylaşılacak yeni yazı yok.")
+        print("Paylaşılacak yeni yazı yok.")
         return
 
+    if not (tg_token and tg_kanal):
+        print("Telegram secret'ları yok; yalnızca Bluesky.")
+
     for y in yeni:
-        kayit = gonderi_olustur(y, sayfa_aciklamasi(y["adres"]), etiketler)
+        aciklama = sayfa_aciklamasi(y["adres"])
+        kayit = gonderi_olustur(y, aciklama, etiketler)
         if dry_run:
             print("DRY_RUN:", json.dumps(kayit, ensure_ascii=False))
             print(f"::notice title=Deneme (paylaşılmadı)::{y['adres']} | {kayit['text']!r}")
+            if tg_token and tg_kanal:
+                print("DRY_RUN Telegram:", telegram_mesaji(y, aciklama))
             continue
         r = http("POST", f"{pds}/xrpc/com.atproto.repo.createRecord",
                  {"repo": did, "collection": "app.bsky.feed.post", "record": kayit}, token=token)
         print(f"Paylaşıldı: {y['adres']} -> {r.get('uri')}")
         print(f"::notice title=Bluesky'da paylaşıldı::{y['adres']}")
+        if tg_token and tg_kanal:
+            try:
+                telegram_gonder(tg_token, tg_kanal, y, aciklama)
+                print(f"::notice title=Telegram'da paylaşıldı::{y['adres']}")
+            except Exception as e:  # noqa: BLE001 — Telegram hatası Bluesky'ı durdurmasın
+                print(f"::warning title=Telegram'a gönderilemedi::{y['adres']} | {e}")
         time.sleep(2)
 
 

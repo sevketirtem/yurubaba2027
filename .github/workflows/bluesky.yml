@@ -1,9 +1,11 @@
-# Site yayınlandıktan sonra yeni yazıları Bluesky hesabında paylaşır.
+# Site yayınlandıktan sonra yeni yazıları Bluesky hesabında ve Telegram kanalında paylaşır.
 # Gerekli secret'lar (Settings → Secrets and variables → Actions):
 #   BLUESKY_HANDLE        ör. yurubaba.bsky.social
 #   BLUESKY_APP_PASSWORD  Bluesky → Ayarlar → Gizlilik ve güvenlik → Uygulama şifreleri
+#   TELEGRAM_BOT_TOKEN    @BotFather'ın verdiği token (isteğe bağlı)
+#   TELEGRAM_CHANNEL      ör. @yurubaba (isteğe bağlı)
 # Secret'lar yoksa iş hata vermez, sadece "paylaşım atlandı" der.
-name: Bluesky'da paylaş
+name: Sosyal medyada paylaş
 
 on:
   workflow_run:
@@ -15,6 +17,10 @@ on:
         description: "Deneme: paylaşmadan ne yapacağını göster"
         type: boolean
         default: true
+      telegram_kontrol:
+        description: "Sadece Telegram botunun kanala bağlı olduğunu kontrol et (hiçbir şey paylaşmaz)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,11 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Yeni yazıları paylaş
+      - name: Yeni yazıları paylaş (Bluesky + Telegram)
         env:
           SITE_FEED: https://yurubaba.com/index.xml
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          TELEGRAM_KONTROL: ${{ github.event_name == 'workflow_dispatch' && inputs.telegram_kontrol || 'false' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           PAYLASIM_SAAT: "48"
           EN_FAZLA: "3"
