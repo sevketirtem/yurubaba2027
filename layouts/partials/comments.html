@@ -1,5 +1,24 @@
-{{- /* Yorum sistemi buraya gelecek (plan: Cusdis). Şimdilik yer tutucu. */ -}}
+{{- /*
+  Yorumlar: Cusdis (https://cusdis.com).
+  hugo.toml → [params.cusdis] appId boşsa "çok yakında" yazısı görünür,
+  doluysa yorum kutusu açılır. Sayfa kimliği kalıcı adres (permalink) yolu:
+  yazının adresi değişmedikçe yorumları da kaybolmaz.
+*/ -}}
+{{- $c := site.Params.cusdis -}}
 <section class="comments" id="yorumlar">
   <h2>Yorumlar</h2>
+  {{- with $c.appId }}
+  <div id="cusdis_thread"
+    data-host="{{ $c.host | default "https://cusdis.com" }}"
+    data-app-id="{{ . }}"
+    data-page-id="{{ $.RelPermalink }}"
+    data-page-url="{{ $.Permalink }}"
+    data-page-title="{{ $.Title }}"
+    data-theme="auto"></div>
+  <script defer src="{{ $c.host | default "https://cusdis.com" }}/js/widget/lang/tr.js"></script>
+  <script defer src="{{ $c.host | default "https://cusdis.com" }}/js/cusdis.es.js"></script>
+  <noscript><p class="empty">Yorumları görmek için JavaScript'i açın.</p></noscript>
+  {{- else }}
   <p class="empty">Yorum köşesi çok yakında açılıyor.</p>
+  {{- end }}
 </section>
