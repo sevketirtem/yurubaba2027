@@ -175,19 +175,22 @@ def main():
 
     did, token, pds = oturum_ac(handle, sifre)
     eski = paylasilmis_adresler(pds, did, token)
+    print(f"::notice::Giriş başarılı ({handle}); {len(eski)} paylaşılmış bağlantı bulundu.")
     yeni = [y for y in adaylar if y["adres"].rstrip("/") not in eski][:en_fazla]
     if not yeni:
-        print("Paylaşılacak yeni yazı yok.")
+        print(f"::notice::Giriş başarılı ({handle}). Paylaşılacak yeni yazı yok.")
         return
 
     for y in yeni:
         kayit = gonderi_olustur(y, sayfa_aciklamasi(y["adres"]), etiketler)
         if dry_run:
             print("DRY_RUN:", json.dumps(kayit, ensure_ascii=False))
+            print(f"::notice title=Deneme (paylaşılmadı)::{y['adres']} | {kayit['text']!r}")
             continue
         r = http("POST", f"{pds}/xrpc/com.atproto.repo.createRecord",
                  {"repo": did, "collection": "app.bsky.feed.post", "record": kayit}, token=token)
         print(f"Paylaşıldı: {y['adres']} -> {r.get('uri')}")
+        print(f"::notice title=Bluesky'da paylaşıldı::{y['adres']}")
         time.sleep(2)
 
 
