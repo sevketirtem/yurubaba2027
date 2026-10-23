@@ -1,22 +1,61 @@
 {{- /*
-  Yorumlar: Cusdis (https://cusdis.com).
-  hugo.toml → [params.cusdis] appId boşsa "çok yakında" yazısı görünür,
-  doluysa yorum kutusu açılır. Sayfa kimliği kalıcı adres (permalink) yolu:
-  yazının adresi değişmedikçe yorumları da kaybolmaz.
+  Yorumlar: Waline (https://waline.js.org) — kendi sunucumuz, iki site ortak.
+  hugo.toml → [params.waline] serverURL boşsa "çok yakında" yazısı görünür,
+  doluysa yorum kutusu açılır. Sayfa kimliği tam adres (https://site/yol/):
+  iki site aynı sunucuyu paylaştığı için yollar çakışmaz.
+  Görsel yükleme ve GIF arama kapalı (rehber kural 6: telifli görsel yok).
 */ -}}
-{{- $c := site.Params.cusdis -}}
+{{- $w := site.Params.waline -}}
 <section class="comments" id="yorumlar">
   <h2>Yorumlar</h2>
-  {{- with $c.appId }}
-  <div id="cusdis_thread"
-    data-host="{{ $c.host | default "https://cusdis.com" }}"
-    data-app-id="{{ . }}"
-    data-page-id="{{ $.RelPermalink }}"
-    data-page-url="{{ $.Permalink }}"
-    data-page-title="{{ $.Title }}"
-    data-theme="auto"></div>
-  <script defer src="{{ $c.host | default "https://cusdis.com" }}/js/widget/lang/tr.js"></script>
-  <script defer src="{{ $c.host | default "https://cusdis.com" }}/js/cusdis.es.js"></script>
+  {{- with $w.serverURL }}
+  <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+  <div id="waline"></div>
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+    init({
+      el: '#waline',
+      serverURL: {{ . }},
+      path: {{ $.Permalink }},
+      lang: 'tr',
+      dark: 'auto',
+      meta: ['nick', 'mail'],
+      requiredMeta: ['nick'],
+      login: 'disable',
+      imageUploader: false,
+      search: false,
+      reaction: false,
+      pageview: false,
+      locale: {
+        nick: 'İsim', nickError: 'İsim en az 3 karakter olmalı.',
+        mail: 'E-posta', mailError: 'Geçerli bir e-posta adresi yazın.',
+        link: 'Web sitesi', optional: 'İsteğe bağlı',
+        placeholder: {{ $w.placeholder | default "Yaz bakalım, ne diyorsun?" }},
+        sofa: 'Henüz yorum yok. İlk lafı sen sok!',
+        submit: 'Gönder', like: 'Beğen', cancelLike: 'Beğeniyi geri al',
+        reply: 'Yanıtla', cancelReply: 'Vazgeç', comment: 'Yorum',
+        refresh: 'Yenile', more: 'Daha fazla yükle', preview: 'Önizleme',
+        emoji: 'Emoji', uploadImage: 'Görsel yükle',
+        seconds: 'saniye önce', minutes: 'dakika önce', hours: 'saat önce',
+        days: 'gün önce', now: 'az önce', uploading: 'Yükleniyor',
+        login: 'Giriş', logout: 'Çıkış', admin: 'Yönetici', sticky: 'Sabitle',
+        word: 'kelime',
+        wordHint: 'Yorum $0 ile $1 kelime arasında olmalı.\n Şu an: $2 kelime',
+        anonymous: 'Anonim',
+        level0: 'Çaylak', level1: 'Tribün', level2: 'Kale arkası',
+        level3: 'Kombine', level4: 'Kaptan', level5: 'Efsane',
+        gif: 'GIF', gifSearchPlaceholder: 'GIF ara',
+        profile: 'Profil', approved: 'Onaylı', waiting: 'Onay bekliyor',
+        spam: 'Spam', unsticky: 'Sabitlemeyi kaldır',
+        oldest: 'En eski', latest: 'En yeni', hottest: 'En çok beğenilen',
+        reactionTitle: 'Ne düşünüyorsun?',
+        commentUnderReview: 'Yorumun incelemede; şimdilik yalnızca sen görüyorsun. Onaydan sonra herkese açılır.',
+        subPostComment: 'Bu yazının yorumlarını takip et',
+        subSiteComment: 'Sitenin yorumlarını takip et',
+        subscribeToReplies: 'Yorumuma gelen yanıtları bildir',
+      },
+    });
+  </script>
   <noscript><p class="empty">Yorumları görmek için JavaScript'i açın.</p></noscript>
   {{- else }}
   <p class="empty">Yorum köşesi çok yakında açılıyor.</p>

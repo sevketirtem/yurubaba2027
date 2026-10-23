@@ -28,11 +28,11 @@ summaryLength = 40
   rivalJab = "Pembe gözlükle futbol izlemek isteyenler için:"
   closingQuestion = "Siz ne diyorsunuz? Rakamla gelin, yorumlara yazın."
 
-  # Yorumlar (Cusdis). appId: cusdis.com → site → Embed Code içindeki data-app-id.
-  # Boş bırakılırsa yazılarda "Yorum köşesi çok yakında" görünür.
-  [params.cusdis]
-    host = "https://cusdis.com"
-    appId = ""
+  # Yorumlar (Waline, kendi sunucumuz; iki site ortak).
+  # serverURL boş bırakılırsa yazılarda "Yorum köşesi çok yakında" görünür.
+  [params.waline]
+    serverURL = ""
+    placeholder = "Rakamla gel, duyguyla değil."
 
 [menus]
   [[menus.main]]
