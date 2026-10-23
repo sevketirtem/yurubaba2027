@@ -31,7 +31,7 @@ summaryLength = 40
   # Yorumlar (Waline, kendi sunucumuz; iki site ortak).
   # serverURL boş bırakılırsa yazılarda "Yorum köşesi çok yakında" görünür.
   [params.waline]
-    serverURL = ""
+    serverURL = "https://waline-sage-six.vercel.app"
     placeholder = "Rakamla gel, duyguyla değil."
 
 [menus]
