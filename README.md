@@ -27,7 +27,7 @@ Yazının üst kısmında `kategoriler` (mac-onu, mac-sonu, transfer-kulisi, had
 - [x] Hugo iskeleti, kendi tema, otomatik yayın
 - [ ] GoDaddy DNS → GitHub Pages bağlantısı
 - [ ] Yorumlar (Cusdis)
-- [ ] Bluesky'a otomatik paylaşım (GitHub Actions)
+- [x] Bluesky'a otomatik paylaşım (GitHub Actions; `.github/workflows/bluesky.yml`, secret'lar: BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
 - [ ] İstatistik kutusu (`hadibaba-istatistik` deposundan)
 - [ ] Ortak temayı ayrı depoya taşıma (Hugo Module)
 

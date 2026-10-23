@@ -1,0 +1,42 @@
+# Site yayınlandıktan sonra yeni yazıları Bluesky hesabında paylaşır.
+# Gerekli secret'lar (Settings → Secrets and variables → Actions):
+#   BLUESKY_HANDLE        ör. yurubaba.bsky.social
+#   BLUESKY_APP_PASSWORD  Bluesky → Ayarlar → Gizlilik ve güvenlik → Uygulama şifreleri
+# Secret'lar yoksa iş hata vermez, sadece "paylaşım atlandı" der.
+name: Bluesky'da paylaş
+
+on:
+  workflow_run:
+    workflows: ["Siteyi yayınla"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Deneme: paylaşmadan ne yapacağını göster"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Aynı anda iki paylaşım çalışmasın (çift gönderi olmasın)
+concurrency:
+  group: bluesky
+  cancel-in-progress: false
+
+jobs:
+  paylas:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Yeni yazıları paylaş
+        env:
+          SITE_FEED: https://yurubaba.com/index.xml
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          PAYLASIM_SAAT: "48"
+          EN_FAZLA: "3"
+          ETIKETLER: "#futbol"
+        run: python3 scripts/bluesky_paylas.py
