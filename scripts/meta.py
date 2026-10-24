@@ -4,9 +4,10 @@ bluesky_paylas.py tarafından kullanılır; tek başına çalışmaz.
 Yalnızca Python standart kütüphanesi.
 
 Anahtarlar (GitHub secret):
-  META_PAGE_TOKEN  Facebook Sayfa erişim anahtarı (süresiz). Sayfaya bağlı
-                   Instagram profesyonel hesabına da bu anahtarla gönderilir.
-                   Sayfa ve Instagram kimlikleri anahtardan otomatik bulunur.
+  META_PAGE_TOKEN  Facebook Sayfa anahtarı ya da süresiz kullanıcı anahtarı.
+                   Sayfaya bağlı Instagram profesyonel hesabına da bununla
+                   gönderilir. Sayfa, Sayfa anahtarı ve Instagram kimliği
+                   anahtardan otomatik bulunur (META_SAYFA_ADI ile seçilir).
   THREADS_TOKEN    Threads uzun ömürlü anahtarı (60 gün; meta_yenile.yml
                    ayda iki kez yeniler).
 """
@@ -47,15 +48,40 @@ def istek(method, url, params=None):
 
 # ---------------------------------------------------------------- Facebook + Instagram
 
-def sayfa_kimlikleri(page_token):
-    """Sayfa anahtarından Sayfa ve bağlı Instagram hesabını bulur."""
-    me = istek("GET", f"{GRAPH}/me", {
-        "fields": "id,name,instagram_business_account{id,username}",
-        "access_token": page_token,
-    })
-    ig = me.get("instagram_business_account") or {}
-    return {"page_id": me["id"], "page_name": me.get("name"),
-            "ig_id": ig.get("id"), "ig_username": ig.get("username")}
+def sayfa_kimlikleri(token, sayfa_adi=None):
+    """Anahtardan Sayfayı, Sayfa anahtarını ve bağlı Instagram hesabını bulur.
+
+    Secret'a Sayfa anahtarı da konabilir, (süresiz) kullanıcı anahtarı da:
+    kullanıcı anahtarıysa yönetilen Sayfalar listesinden Sayfa anahtarı alınır.
+    Birden çok Sayfa varsa sayfa_adi (ör. "Hadi Baba") ile seçilir.
+    """
+    me = istek("GET", f"{GRAPH}/me", {"fields": "id,name", "metadata": "1", "access_token": token})
+    tur = (me.get("metadata") or {}).get("type")
+    alanlar = "id,name,access_token,instagram_business_account{id,username}"
+    if tur == "page":
+        sayfa = {"id": me["id"], "name": me.get("name"), "access_token": token}
+        for alan in ("instagram_business_account", "connected_instagram_account"):
+            try:
+                r = istek("GET", f"{GRAPH}/{me['id']}", {"fields": f"{alan}{{id,username}}", "access_token": token})
+                if r.get(alan):
+                    sayfa["instagram_business_account"] = r[alan]
+                    break
+            except RuntimeError:
+                continue
+        kaynak = "Sayfa anahtarı"
+    else:
+        liste = istek("GET", f"{GRAPH}/me/accounts", {"fields": alanlar, "access_token": token}).get("data") or []
+        if not liste:
+            raise RuntimeError("Bu anahtarla yönetilen Sayfa bulunamadı")
+        uygun = [p for p in liste if sayfa_adi and p.get("name", "").casefold() == sayfa_adi.casefold()]
+        if sayfa_adi and not uygun:
+            adlar = ", ".join(p.get("name", "?") for p in liste)
+            raise RuntimeError(f"'{sayfa_adi}' adlı Sayfa bulunamadı (bulunanlar: {adlar})")
+        sayfa = (uygun or liste)[0]
+        kaynak = "kullanıcı anahtarı → Sayfa anahtarı"
+    ig = sayfa.get("instagram_business_account") or {}
+    return {"page_id": sayfa["id"], "page_name": sayfa.get("name"), "page_token": sayfa["access_token"],
+            "ig_id": ig.get("id"), "ig_username": ig.get("username"), "kaynak": kaynak}
 
 
 def facebook_paylas(page_token, page_id, metin, link):

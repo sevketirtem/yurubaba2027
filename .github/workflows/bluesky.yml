@@ -51,6 +51,7 @@ jobs:
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
           TELEGRAM_KONTROL: ${{ github.event_name == 'workflow_dispatch' && inputs.telegram_kontrol || 'false' }}
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_SAYFA_ADI: "Yürü Baba"
           THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
           META_KONTROL: ${{ github.event_name == 'workflow_dispatch' && inputs.meta_kontrol || 'false' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}

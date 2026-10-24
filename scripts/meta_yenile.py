@@ -23,7 +23,7 @@ def main():
 
     if page_token:
         try:
-            k = meta.sayfa_kimlikleri(page_token)
+            k = meta.sayfa_kimlikleri(page_token, os.environ.get("META_SAYFA_ADI") or None)
             print(f"::notice title=Facebook anahtarı::Çalışıyor ({k['page_name']}; Instagram @{k['ig_username']})")
         except Exception as e:  # noqa: BLE001
             sorun = True

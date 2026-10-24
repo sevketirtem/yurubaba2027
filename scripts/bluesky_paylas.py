@@ -28,6 +28,7 @@ Ortam değişkenleri:
   META_PAGE_TOKEN        Facebook Sayfa anahtarı (süresiz; Instagram da bununla)
   THREADS_TOKEN          Threads anahtarı (60 gün; meta_yenile.yml yeniler)
   IG_ETIKETLER           Instagram etiketleri (varsayılan "#futbol #süperlig #türkfutbolu")
+  META_SAYFA_ADI         Kullanıcı anahtarı birden çok Sayfa yönetiyorsa hangisi (ör. "Hadi Baba")
   META_KONTROL           "true" ise hiçbir şey paylaşmaz; Meta anahtarlarını kontrol eder
 
 Diğer platformlar ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da
@@ -242,15 +243,15 @@ def telegram_kontrol(token, kanal):
         sys.exit(1)
 
 
-def meta_kontrol(page_token, th_token):
+def meta_kontrol(page_token, th_token, sayfa_adi=None):
     tamam = True
     if page_token:
         try:
-            k = meta.sayfa_kimlikleri(page_token)
-            print(f"::notice title=Facebook kontrolü::Sayfa: {k['page_name']} ({k['page_id']}) ✅")
+            k = meta.sayfa_kimlikleri(page_token, sayfa_adi)
+            print(f"::notice title=Facebook kontrolü::Sayfa: {k['page_name']} ({k['page_id']}) ✅ [{k['kaynak']}]")
             if k["ig_id"]:
                 print(f"::notice title=Instagram kontrolü::@{k['ig_username']} ({k['ig_id']}) ✅, "
-                      f"24 saatlik kota: {meta.instagram_kota(page_token, k['ig_id'])}")
+                      f"24 saatlik kota: {meta.instagram_kota(k['page_token'], k['ig_id'])}")
             else:
                 tamam = False
                 print("::warning title=Instagram kontrolü::Sayfaya bağlı Instagram profesyonel hesabı bulunamadı ❌")
@@ -278,10 +279,11 @@ def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_toke
     m = meta.metinler(y, aciklama, etiketler, ig_etiketler, alan)
     hedefler = []
     if page_token and kimlik:
-        hedefler.append(("Facebook", lambda: meta.facebook_paylas(page_token, kimlik["page_id"], m["facebook"], y["adres"])))
+        pt = kimlik["page_token"]
+        hedefler.append(("Facebook", lambda: meta.facebook_paylas(pt, kimlik["page_id"], m["facebook"], y["adres"])))
         if kimlik.get("ig_id"):
             if bilgi.get("kare"):
-                hedefler.append(("Instagram", lambda: meta.instagram_paylas(page_token, kimlik["ig_id"], bilgi["kare"], m["instagram"])))
+                hedefler.append(("Instagram", lambda: meta.instagram_paylas(pt, kimlik["ig_id"], bilgi["kare"], m["instagram"])))
             else:
                 print(f"::warning title=Instagram atlandı::{y['adres']} | sayfada kare kart görseli yok")
     if th_token:
@@ -314,9 +316,10 @@ def main():
     page_token = os.environ.get("META_PAGE_TOKEN", "").strip()
     th_token = os.environ.get("THREADS_TOKEN", "").strip()
     ig_etiketler = os.environ.get("IG_ETIKETLER", "").strip() or "#futbol #süperlig #türkfutbolu"
+    sayfa_adi = os.environ.get("META_SAYFA_ADI", "").strip() or None
 
     if os.environ.get("META_KONTROL", "").lower() == "true":
-        meta_kontrol(page_token, th_token)
+        meta_kontrol(page_token, th_token, sayfa_adi)
         return
 
     if os.environ.get("TELEGRAM_KONTROL", "").lower() == "true":
@@ -351,7 +354,7 @@ def main():
     kimlik = None
     if page_token:
         try:
-            kimlik = meta.sayfa_kimlikleri(page_token)
+            kimlik = meta.sayfa_kimlikleri(page_token, sayfa_adi)
         except Exception as e:  # noqa: BLE001
             print(f"::warning title=Facebook/Instagram atlandı::Sayfa anahtarı çalışmadı: {e}")
 

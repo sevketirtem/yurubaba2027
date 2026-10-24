@@ -22,6 +22,7 @@ jobs:
       - name: Kontrol et ve yenile
         env:
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_SAYFA_ADI: "Yürü Baba"
           THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
           YENI_ANAHTAR: ${{ runner.temp }}/threads.txt
         run: python3 scripts/meta_yenile.py
