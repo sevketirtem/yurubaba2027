@@ -1,0 +1,32 @@
+# İleri tarihli yazıları zamanı gelince yayına sokar.
+# GitHub'ın saatlik (cron) derlemesi pratikte 4-6 saatte bir çalıştığı için,
+# push'tan sonra ileri tarihli yazı varsa bu iş o saate kadar bekler,
+# "Siteyi yayınla"yı tetikler ve paylaşım botunun çalıştığından emin olur.
+# Yeni bir push gelirse bekleyen iş iptal edilir, yenisi listeyi baştan okur.
+name: Zamanı gelince yayınla
+
+on:
+  push:
+    branches: ["main"]
+    paths: ["content/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: zamanli
+  cancel-in-progress: true
+
+jobs:
+  bekle-ve-yayinla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - name: İleri tarihli yazıları bekle ve yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 scripts/zamanli_yayin.py
