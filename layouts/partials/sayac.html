@@ -1,0 +1,8 @@
+{{- /* Ziyaretçi sayacı: GoatCounter (çerezsiz, kişisel veri tutmaz).
+     Kod hugo.toml [params] goatcounter; boşsa hiçbir şey eklenmez.
+     Yerel denemede (hugo server) sayılmaz. */ -}}
+{{- with site.Params.goatcounter }}
+{{- if hugo.IsProduction }}
+<script data-goatcounter="https://{{ . }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+{{- end }}
+{{- end }}

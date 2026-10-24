@@ -23,6 +23,7 @@
   <style>:root{--accent:{{ site.Params.accent | safeCSS }};--accent-ink:{{ site.Params.accentInk | safeCSS }}}</style>
   {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+  {{ partial "sayac.html" . }}
 </head>
 <body>
   {{ partial "header.html" . }}

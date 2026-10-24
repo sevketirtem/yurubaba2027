@@ -28,6 +28,9 @@ summaryLength = 40
   rivalName = "Hadi Baba"
   rivalURL = "https://hadibaba.com/"
   rivalJab = "Pembe gözlükle futbol izlemek isteyenler için:"
+  # Ziyaretçi sayacı (GoatCounter): https://yurubaba.goatcounter.com — boş bırakılırsa sayaç kapanır.
+  goatcounter = "yurubaba"
+
   closingQuestion = "Siz ne diyorsunuz? Rakamla gelin, yorumlara yazın."
 
   # Yorumlar (Waline, kendi sunucumuz; iki site ortak).
