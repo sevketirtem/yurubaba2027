@@ -94,14 +94,45 @@ def rss_yazilari(feed_url):
     return yazilar
 
 
-def sayfa_aciklamasi(adres):
-    """Yazının <meta name="description"> içeriğini alır (kart açıklaması)."""
+def _meta(sayfa, ad):
+    """<meta name|property=ad content=...> değerini bulur (tırnaklı/tırnaksız)."""
+    m = re.search(r'<meta\s+(?:name|property)="?' + re.escape(ad) + r'"?\s+content="([^"]*)"', sayfa)
+    return html.unescape(m.group(1)).strip() if m else ""
+
+
+def sayfa_bilgisi(adres):
+    """Yazı sayfasından açıklama ve paylaşım kartı adreslerini alır."""
     try:
         sayfa = http("GET", adres, raw=True).decode("utf-8", errors="replace")
     except Exception:  # noqa: BLE001
-        return ""
-    m = re.search(r'<meta\s+name="?description"?\s+content="([^"]*)"', sayfa)
-    return html.unescape(m.group(1)).strip() if m else ""
+        return {"aciklama": "", "kart": "", "kare": ""}
+    return {
+        "aciklama": _meta(sayfa, "description"),
+        "kart": _meta(sayfa, "og:image"),        # 1200x630, bağlantı önizlemesi
+        "kare": _meta(sayfa, "hadiyuru:kare"),   # 1080x1080, Instagram
+    }
+
+
+def sayfa_aciklamasi(adres):
+    return sayfa_bilgisi(adres)["aciklama"]
+
+
+def kart_yukle(pds, token, kart_adresi):
+    """Kart görselini Bluesky'a yükler; bağlantı kartında küçük resim olur."""
+    if not kart_adresi:
+        return None
+    try:
+        veri = http("GET", kart_adresi, raw=True)
+        if len(veri) > 950_000:
+            return None
+        req = urllib.request.Request(f"{pds}/xrpc/com.atproto.repo.uploadBlob", data=veri, method="POST",
+                                     headers={"User-Agent": UA, "Content-Type": "image/jpeg",
+                                              "Authorization": f"Bearer {token}"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.loads(r.read())["blob"]
+    except Exception as e:  # noqa: BLE001 — resim olmadan da paylaşılır
+        print(f"::warning::Kart görseli yüklenemedi: {e}")
+        return None
 
 
 def oturum_ac(handle, sifre):
@@ -126,7 +157,7 @@ def paylasilmis_adresler(pds, did, token):
     return adresler
 
 
-def gonderi_olustur(yazi, aciklama, etiketler):
+def gonderi_olustur(yazi, aciklama, etiketler, thumb=None):
     baslik = yazi["baslik"]
     ek = f"\n\n{etiketler}" if etiketler else ""
     if len(baslik) + len(ek) > TEXT_SINIRI:
@@ -153,6 +184,8 @@ def gonderi_olustur(yazi, aciklama, etiketler):
             "external": {"uri": yazi["adres"], "title": yazi["baslik"], "description": aciklama[:300]},
         },
     }
+    if thumb:
+        kayit["embed"]["external"]["thumb"] = thumb
     if facets:
         kayit["facets"] = facets
     return kayit
@@ -244,8 +277,10 @@ def main():
         print("Telegram secret'ları yok; yalnızca Bluesky.")
 
     for y in yeni:
-        aciklama = sayfa_aciklamasi(y["adres"])
-        kayit = gonderi_olustur(y, aciklama, etiketler)
+        bilgi = sayfa_bilgisi(y["adres"])
+        aciklama = bilgi["aciklama"]
+        thumb = None if dry_run else kart_yukle(pds, token, bilgi["kart"])
+        kayit = gonderi_olustur(y, aciklama, etiketler, thumb)
         if dry_run:
             print("DRY_RUN:", json.dumps(kayit, ensure_ascii=False))
             print(f"::notice title=Deneme (paylaşılmadı)::{y['adres']} | {kayit['text']!r}")

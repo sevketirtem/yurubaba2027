@@ -1,0 +1,27 @@
+{{- /*
+  Yazının paylaşım kartlarını üretir (Hugo görsel işleme, derleme sırasında).
+  Döner: dict "kare" (1080x1080 JPEG, Instagram) ve "genis" (1200x630 JPEG,
+  bağlantı önizlemesi: Facebook, Telegram, Bluesky...).
+  Zemin görselleri assets/kart/ altında; yazı tipi Archivo Black (SIL OFL).
+*/ -}}
+{{- $font := resources.Get "kart/ArchivoBlack.ttf" -}}
+{{- $baslik := .Title -}}
+{{- $etiket := "" -}}
+{{- with .GetTerms "kategoriler" }}{{ $etiket = (index . 0).LinkTitle }}{{ end -}}
+{{- $alan := replaceRE `^https?://([^/]+)/?.*$` "$1" site.BaseURL -}}
+{{- $vurgu := site.Params.accent -}}
+{{- $etiketRenk := site.Params.kartEtiket | default "#ffffff" -}}
+
+{{- $kare := resources.Get "kart/zemin-kare.png" | images.Filter
+    (images.Text $etiket (dict "color" $etiketRenk "size" 34 "x" 70 "y" 70 "font" $font))
+    (images.Text $baslik (dict "color" "#ffffff" "size" 70 "linespacing" 14 "x" 70 "y" 140 "font" $font))
+    (images.Text $alan (dict "color" $vurgu "size" 40 "x" 70 "y" 992 "font" $font)) -}}
+{{- $kare = $kare.Process "jpg q88" -}}
+
+{{- $genis := resources.Get "kart/zemin-genis.png" | images.Filter
+    (images.Text $etiket (dict "color" $etiketRenk "size" 26 "x" 400 "y" 60 "font" $font))
+    (images.Text $baslik (dict "color" "#ffffff" "size" 48 "linespacing" 10 "x" 400 "y" 110 "font" $font))
+    (images.Text $alan (dict "color" $vurgu "size" 30 "x" 40 "y" 578 "font" $font)) -}}
+{{- $genis = $genis.Process "jpg q85" -}}
+
+{{- return (dict "kare" $kare "genis" $genis) -}}

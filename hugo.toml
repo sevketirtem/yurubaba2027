@@ -22,6 +22,8 @@ summaryLength = 40
   # Tema renkleri: iki site aynı iskeleti, farklı renklerle kullanır
   accent = "#1f3a5f"
   accentInk = "#ffffff"
+  # Paylaşım kartındaki kategori etiketinin rengi (layouts/partials/kart.html)
+  kartEtiket = "#b8cbe3"
   # Sahnedeki rakip
   rivalName = "Hadi Baba"
   rivalURL = "https://hadibaba.com/"
