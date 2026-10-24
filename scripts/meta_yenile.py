@@ -38,9 +38,14 @@ def main():
                 with open(cikti, "w") as f:
                     f.write(yeni)
         except Exception as e:  # noqa: BLE001
-            sorun = True
-            print(f"::error title=Threads anahtarı yenilenemedi::{e} — anahtar 24 saatten yeni olabilir "
-                  f"ya da süresi dolmuş olabilir; dolduysa yenisi alınmalı.")
+            # Anahtar hâlâ çalışıyorsa (ör. 24 saatten yeni) bu bir hata değil
+            try:
+                u = meta.threads_kullanici(th_token)
+                print(f"::warning title=Threads anahtarı bu sefer yenilenmedi::Anahtar geçerli "
+                      f"(@{u.get('username')}); muhtemelen 24 saatten yeni. Bir sonraki çalışmada yenilenir. ({e})")
+            except Exception:  # noqa: BLE001
+                sorun = True
+                print(f"::error title=Threads anahtarı çalışmıyor::{e} — süresi dolmuş olabilir; yenisi alınmalı (rehberdeki adımlar).")
 
     if sorun:
         sys.exit(1)
