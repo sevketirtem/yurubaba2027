@@ -1,0 +1,19 @@
+{{- /* Canlı skor + puan durumu kutusu. Kullanım: partial "skor.html" (dict "mod" "ozet"|"tam")
+       Veri: site.Params.skorAPI (skor-api/ Vercel projesi). Boşsa "çok yakında". */ -}}
+{{- $mod := .mod | default "tam" -}}
+<section class="skor skor-{{ $mod }}"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-mod="{{ $mod }}" aria-label="Süper Lig canlı skor ve puan durumu">
+  {{- if eq $mod "ozet" }}
+  <div class="skor-bas"><h2>Süper Lig</h2><a href="{{ "canli/" | relURL }}">Tüm maçlar ve puan durumu →</a></div>
+  {{- end }}
+  {{- if site.Params.skorAPI }}
+  <div class="skor-kolonlar">
+    <div><h3>{{ if eq $mod "ozet" }}Maçlar{{ else }}Bu haftanın maçları{{ end }}</h3><div class="skor-maclar"><p class="empty">Yükleniyor…</p></div></div>
+    <div><h3>Puan durumu</h3><div class="skor-puan"><p class="empty">Yükleniyor…</p></div></div>
+  </div>
+  <p class="skor-alt"></p>
+  {{- $js := resources.Get "js/skor.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- else }}
+  <p class="empty">Canlı skor ve puan durumu çok yakında burada.</p>
+  {{- end }}
+</section>

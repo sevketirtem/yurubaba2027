@@ -13,6 +13,7 @@
     </section>
     {{ end }}
   {{ end }}
+  {{ if eq $pager.PageNumber 1 }}{{ partial "skor.html" (dict "mod" "ozet") }}{{ end }}
   <section class="grid">
     {{ range $i, $p := $pager.Pages }}
       {{ if or (gt $i 0) (gt $pager.PageNumber 1) }}{{ partial "post-card.html" $p }}{{ end }}

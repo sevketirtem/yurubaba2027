@@ -75,3 +75,29 @@ main.wrap { padding-top: 24px; padding-bottom: 40px; }
 .site-footer p { margin: 0 0 6px; }
 .rival { font-weight: 700; color: var(--ink); }
 .rival a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 3px; text-underline-offset: 3px; }
+
+/* Canlı skor ve puan durumu (partials/skor.html, js/skor.js) */
+.skor { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin: 0 0 24px; }
+.skor h2 { margin: 0; font-size: 16px; text-transform: uppercase; letter-spacing: .05em; }
+.skor h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.skor-bas { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.skor-bas a { font-size: 14px; font-weight: 600; text-decoration-color: var(--accent); }
+.skor-kolonlar { display: grid; grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 760px) { .skor-kolonlar { grid-template-columns: 1.1fr 1fr; } }
+.mac-gun { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: capitalize; margin: 10px 0 4px; }
+.mac { display: grid; grid-template-columns: 48px 1fr auto 1fr; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.mac-durum { font-size: 12px; font-weight: 700; color: var(--muted); }
+.mac-ev { text-align: right; }
+.mac-skor { font-weight: 800; min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+.mac.canli .mac-durum { color: #fff; background: #d62828; border-radius: 4px; text-align: center; padding: 1px 4px; animation: skor-nabiz 1.6s ease-in-out infinite; }
+.mac.canli .mac-skor { color: var(--accent); }
+@keyframes skor-nabiz { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .mac.canli .mac-durum { animation: none; } }
+.tablo-sar { overflow-x: auto; }
+table.puan { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+table.puan th { font-size: 12px; color: var(--muted); font-weight: 700; text-align: center; padding: 4px; border-bottom: 2px solid var(--line); }
+table.puan td { text-align: center; padding: 5px 4px; border-bottom: 1px solid var(--line); }
+table.puan td.takim { text-align: left; white-space: nowrap; }
+table.puan th:nth-child(2) { text-align: left; }
+table.puan td.p { font-weight: 800; }
+.skor-alt { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
