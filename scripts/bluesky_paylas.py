@@ -30,6 +30,9 @@ Ortam değişkenleri:
   IG_ETIKETLER           Instagram etiketleri (varsayılan "#futbol #süperlig #türkfutbolu")
   META_SAYFA_ADI         Kullanıcı anahtarı birden çok Sayfa yönetiyorsa hangisi (ör. "Hadi Baba")
   META_KONTROL           "true" ise hiçbir şey paylaşmaz; Meta anahtarlarını kontrol eder
+  META_YAZI              Bir yazı adresi verilirse yalnızca o yazı yalnızca Facebook,
+                         Instagram ve Threads'e gönderilir (Bluesky/Telegram'a dokunulmaz).
+                         Deneme ve geriye dönük paylaşım için; DRY_RUN'a uyar.
 
 Diğer platformlar ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da
 ilk kez paylaşıldığı anda öbürlerine de gönderilir. Birinin hatası diğerlerini
@@ -320,6 +323,20 @@ def main():
 
     if os.environ.get("META_KONTROL", "").lower() == "true":
         meta_kontrol(page_token, th_token, sayfa_adi)
+        return
+
+    tek_yazi = os.environ.get("META_YAZI", "").strip()
+    if tek_yazi:
+        if not feed:
+            sys.exit("SITE_FEED tanımlı değil.")
+        bul = [y for y in rss_yazilari(feed) if y["adres"].rstrip("/") == tek_yazi.rstrip("/")]
+        if not bul:
+            sys.exit(f"Yazı RSS'te bulunamadı: {tek_yazi}")
+        y = bul[0]
+        bilgi = sayfa_bilgisi(y["adres"])
+        kimlik = meta.sayfa_kimlikleri(page_token, sayfa_adi) if page_token else None
+        print(f"Yalnızca Meta'ya gönderiliyor: {y['adres']}")
+        meta_gonder(y, bilgi, bilgi["aciklama"], etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run)
         return
 
     if os.environ.get("TELEGRAM_KONTROL", "").lower() == "true":
