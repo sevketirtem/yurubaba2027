@@ -31,6 +31,10 @@ on:
         description: "Tek bir yazıyı yalnızca Facebook/Instagram/Threads'e gönder (yazının tam adresi; boş = normal çalışma)"
         type: string
         default: ""
+      meta_hedef:
+        description: "meta_yazi ile: yalnızca bu platformlar (ör. threads veya facebook,instagram; boş = hepsi)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -59,6 +63,7 @@ jobs:
           THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
           META_KONTROL: ${{ github.event_name == 'workflow_dispatch' && inputs.meta_kontrol || 'false' }}
           META_YAZI: ${{ github.event_name == 'workflow_dispatch' && inputs.meta_yazi || '' }}
+          META_HEDEFLER: ${{ github.event_name == 'workflow_dispatch' && inputs.meta_hedef || '' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           PAYLASIM_SAAT: "48"
           EN_FAZLA: "3"

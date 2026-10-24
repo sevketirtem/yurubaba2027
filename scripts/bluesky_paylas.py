@@ -33,6 +33,8 @@ Ortam değişkenleri:
   META_YAZI              Bir yazı adresi verilirse yalnızca o yazı yalnızca Facebook,
                          Instagram ve Threads'e gönderilir (Bluesky/Telegram'a dokunulmaz).
                          Deneme ve geriye dönük paylaşım için; DRY_RUN'a uyar.
+  META_HEDEFLER          META_YAZI ile birlikte: yalnızca bu platformlar (ör. "threads"
+                         ya da "facebook,instagram"); boş = hepsi
 
 Diğer platformlar ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da
 ilk kez paylaşıldığı anda öbürlerine de gönderilir. Birinin hatası diğerlerini
@@ -276,7 +278,7 @@ def meta_kontrol(page_token, th_token, sayfa_adi=None):
         sys.exit(1)
 
 
-def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run):
+def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run, sadece=None):
     """Bir yazıyı Facebook, Instagram ve Threads'e gönderir; her biri bağımsız."""
     alan = urllib.parse.urlsplit(y["adres"]).netloc
     m = meta.metinler(y, aciklama, etiketler, ig_etiketler, alan)
@@ -292,6 +294,8 @@ def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_toke
     if th_token:
         hedefler.append(("Threads", lambda: meta.threads_paylas(th_token, m["threads"], y["adres"])))
     ekler = {"Facebook": ("'ta", "'a"), "Instagram": ("'da", "'a"), "Threads": ("'te", "'e")}
+    if sadece:
+        hedefler = [(ad, g) for ad, g in hedefler if ad.lower() in sadece]
     for ad, gorev in hedefler:
         if dry_run:
             print(f"DRY_RUN {ad}:", json.dumps(m[ad.lower()], ensure_ascii=False))
@@ -336,7 +340,8 @@ def main():
         bilgi = sayfa_bilgisi(y["adres"])
         kimlik = meta.sayfa_kimlikleri(page_token, sayfa_adi) if page_token else None
         print(f"Yalnızca Meta'ya gönderiliyor: {y['adres']}")
-        meta_gonder(y, bilgi, bilgi["aciklama"], etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run)
+        sadece = {h.strip().lower() for h in os.environ.get("META_HEDEFLER", "").split(",") if h.strip()} or None
+        meta_gonder(y, bilgi, bilgi["aciklama"], etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run, sadece)
         return
 
     if os.environ.get("TELEGRAM_KONTROL", "").lower() == "true":
