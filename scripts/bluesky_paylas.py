@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Sitenin yeni yazılarını Bluesky hesabında (ve varsa Telegram kanalında) paylaşır.
+"""Sitenin yeni yazılarını Bluesky'da ve (anahtarları varsa) Telegram, Facebook,
+Instagram ve Threads'te paylaşır.
 
 Nasıl çalışır:
   1. Yayındaki sitenin RSS akışını (index.xml) okur; yalnızca yazıları alır
@@ -24,8 +25,14 @@ Ortam değişkenleri:
   TELEGRAM_KONTROL       "true" ise hiçbir şey paylaşmaz; sadece botun kanala
                          yönetici olarak eklendiğini ve mesaj atabildiğini kontrol eder
 
-Telegram ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da ilk kez
-paylaşıldığı anda Telegram kanalına da gönderilir.
+  META_PAGE_TOKEN        Facebook Sayfa anahtarı (süresiz; Instagram da bununla)
+  THREADS_TOKEN          Threads anahtarı (60 gün; meta_yenile.yml yeniler)
+  IG_ETIKETLER           Instagram etiketleri (varsayılan "#futbol #süperlig #türkfutbolu")
+  META_KONTROL           "true" ise hiçbir şey paylaşmaz; Meta anahtarlarını kontrol eder
+
+Diğer platformlar ayrı bir "paylaşıldı" listesi tutmaz: bir yazı Bluesky'da
+ilk kez paylaşıldığı anda öbürlerine de gönderilir. Birinin hatası diğerlerini
+durdurmaz (Actions özetinde uyarı olarak görünür).
 
 Yalnızca Python standart kütüphanesi kullanılır; kurulacak paket yok.
 """
@@ -42,6 +49,8 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+
+import meta
 
 ENTRYWAY = "https://bsky.social"
 UA = "HadiYuruBot/1.0 (+https://github.com/sevketirtem)"
@@ -233,6 +242,62 @@ def telegram_kontrol(token, kanal):
         sys.exit(1)
 
 
+def meta_kontrol(page_token, th_token):
+    tamam = True
+    if page_token:
+        try:
+            k = meta.sayfa_kimlikleri(page_token)
+            print(f"::notice title=Facebook kontrolü::Sayfa: {k['page_name']} ({k['page_id']}) ✅")
+            if k["ig_id"]:
+                print(f"::notice title=Instagram kontrolü::@{k['ig_username']} ({k['ig_id']}) ✅, "
+                      f"24 saatlik kota: {meta.instagram_kota(page_token, k['ig_id'])}")
+            else:
+                tamam = False
+                print("::warning title=Instagram kontrolü::Sayfaya bağlı Instagram profesyonel hesabı bulunamadı ❌")
+        except Exception as e:  # noqa: BLE001
+            tamam = False
+            print(f"::error title=Facebook kontrolü::{e}")
+    else:
+        print("::notice::META_PAGE_TOKEN yok; Facebook/Instagram atlanır.")
+    if th_token:
+        try:
+            u = meta.threads_kullanici(th_token)
+            print(f"::notice title=Threads kontrolü::@{u.get('username')} ({u.get('id')}) ✅")
+        except Exception as e:  # noqa: BLE001
+            tamam = False
+            print(f"::error title=Threads kontrolü::{e}")
+    else:
+        print("::notice::THREADS_TOKEN yok; Threads atlanır.")
+    if not tamam:
+        sys.exit(1)
+
+
+def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_token, kimlik, dry_run):
+    """Bir yazıyı Facebook, Instagram ve Threads'e gönderir; her biri bağımsız."""
+    alan = urllib.parse.urlsplit(y["adres"]).netloc
+    m = meta.metinler(y, aciklama, etiketler, ig_etiketler, alan)
+    hedefler = []
+    if page_token and kimlik:
+        hedefler.append(("Facebook", lambda: meta.facebook_paylas(page_token, kimlik["page_id"], m["facebook"], y["adres"])))
+        if kimlik.get("ig_id"):
+            if bilgi.get("kare"):
+                hedefler.append(("Instagram", lambda: meta.instagram_paylas(page_token, kimlik["ig_id"], bilgi["kare"], m["instagram"])))
+            else:
+                print(f"::warning title=Instagram atlandı::{y['adres']} | sayfada kare kart görseli yok")
+    if th_token:
+        hedefler.append(("Threads", lambda: meta.threads_paylas(th_token, m["threads"], y["adres"])))
+    ekler = {"Facebook": ("'ta", "'a"), "Instagram": ("'da", "'a"), "Threads": ("'te", "'e")}
+    for ad, gorev in hedefler:
+        if dry_run:
+            print(f"DRY_RUN {ad}:", json.dumps(m[ad.lower()], ensure_ascii=False))
+            continue
+        try:
+            gorev()
+            print(f"::notice title={ad}{ekler[ad][0]} paylaşıldı::{y['adres']}")
+        except Exception as e:  # noqa: BLE001
+            print(f"::warning title={ad}{ekler[ad][1]} gönderilemedi::{y['adres']} | {e}")
+
+
 def main():
     feed = os.environ.get("SITE_FEED", "").strip()
     handle = os.environ.get("BLUESKY_HANDLE", "").strip()
@@ -245,6 +310,14 @@ def main():
     tg_kanal = os.environ.get("TELEGRAM_CHANNEL", "").strip()
     if tg_kanal and not tg_kanal.startswith("@") and not tg_kanal.lstrip("-").isdigit():
         tg_kanal = "@" + tg_kanal.split("/")[-1]  # "t.me/hadibaba" veya "hadibaba" yazılmışsa
+
+    page_token = os.environ.get("META_PAGE_TOKEN", "").strip()
+    th_token = os.environ.get("THREADS_TOKEN", "").strip()
+    ig_etiketler = os.environ.get("IG_ETIKETLER", "").strip() or "#futbol #süperlig #türkfutbolu"
+
+    if os.environ.get("META_KONTROL", "").lower() == "true":
+        meta_kontrol(page_token, th_token)
+        return
 
     if os.environ.get("TELEGRAM_KONTROL", "").lower() == "true":
         if not tg_token or not tg_kanal:
@@ -274,7 +347,13 @@ def main():
         return
 
     if not (tg_token and tg_kanal):
-        print("Telegram secret'ları yok; yalnızca Bluesky.")
+        print("Telegram secret'ları yok; Telegram atlanır.")
+    kimlik = None
+    if page_token:
+        try:
+            kimlik = meta.sayfa_kimlikleri(page_token)
+        except Exception as e:  # noqa: BLE001
+            print(f"::warning title=Facebook/Instagram atlandı::Sayfa anahtarı çalışmadı: {e}")
 
     for y in yeni:
         bilgi = sayfa_bilgisi(y["adres"])
@@ -286,6 +365,7 @@ def main():
             print(f"::notice title=Deneme (paylaşılmadı)::{y['adres']} | {kayit['text']!r}")
             if tg_token and tg_kanal:
                 print("DRY_RUN Telegram:", telegram_mesaji(y, aciklama))
+            meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_token, kimlik, True)
             continue
         r = http("POST", f"{pds}/xrpc/com.atproto.repo.createRecord",
                  {"repo": did, "collection": "app.bsky.feed.post", "record": kayit}, token=token)
@@ -297,6 +377,7 @@ def main():
                 print(f"::notice title=Telegram'da paylaşıldı::{y['adres']}")
             except Exception as e:  # noqa: BLE001 — Telegram hatası Bluesky'ı durdurmasın
                 print(f"::warning title=Telegram'a gönderilemedi::{y['adres']} | {e}")
+        meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_token, kimlik, False)
         time.sleep(2)
 
 

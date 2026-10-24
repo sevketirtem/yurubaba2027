@@ -1,0 +1,40 @@
+# Meta anahtarlarını kontrol eder ve Threads anahtarını (60 gün) yeniler.
+# Ayın 1'inde ve 15'inde çalışır; elle de çalıştırılabilir.
+# Yeni Threads anahtarını secret'a yazabilmek için SECRETS_PAT gerekir:
+#   GitHub → Settings → Developer settings → Fine-grained token,
+#   yalnızca bu depo, izin: "Secrets: Read and write". Secret adı: SECRETS_PAT
+# SECRETS_PAT yoksa yenileme yine denenir ama anahtar secret'a yazılamazsa uyarı verir.
+name: Meta anahtarlarını yenile
+
+on:
+  schedule:
+    - cron: "23 4 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  yenile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Kontrol et ve yenile
+        env:
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          YENI_ANAHTAR: ${{ runner.temp }}/threads.txt
+        run: python3 scripts/meta_yenile.py
+      - name: Yeni Threads anahtarını kaydet
+        env:
+          GH_TOKEN: ${{ secrets.SECRETS_PAT }}
+          DOSYA: ${{ runner.temp }}/threads.txt
+        run: |
+          if [ ! -s "$DOSYA" ]; then echo "Yenilenecek Threads anahtarı yok."; exit 0; fi
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning title=Threads anahtarı kaydedilmedi::SECRETS_PAT secret'ı yok. Anahtar uzatıldıysa sorun yok; yeni bir anahtar verildiyse 60 gün içinde elle güncellenmeli."
+            rm -f "$DOSYA"; exit 0
+          fi
+          gh secret set THREADS_TOKEN -R "$GITHUB_REPOSITORY" < "$DOSYA"
+          rm -f "$DOSYA"
+          echo "::notice title=Threads anahtarı kaydedildi::THREADS_TOKEN secret'ı güncellendi."
