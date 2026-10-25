@@ -112,10 +112,16 @@ def getir(api, yol, deneme=2):
             with urllib.request.urlopen(req, timeout=60) as r:
                 return json.loads(r.read())
         except Exception as e:  # noqa: BLE001
+            ayrinti = ""
+            if hasattr(e, "read"):
+                try:
+                    ayrinti = " " + e.read().decode("utf-8", "replace")[:200]
+                except Exception:  # noqa: BLE001
+                    pass
             if i + 1 == deneme:
-                uyar(f"{yol}: {e}")
+                uyar(f"{yol}: {e}{ayrinti}")
                 return None
-            time.sleep(3)
+            time.sleep(35)  # hata yanıtı 30 sn önbellekte kalır
 
 
 def yaz(yol, veri):
@@ -198,7 +204,7 @@ def main():
 
     # Takım sayfaları
     tablo = (sonuc.get("puan") or {}).get("tablo") or []
-    with ThreadPoolExecutor(6) as havuz:
+    with ThreadPoolExecutor(3) as havuz:  # API-Football'un dakika/saniye sınırına takılmamak için az paralel
         takimlar = list(havuz.map(lambda s: (s, getir(api, f"/api/takim?id={s['id']}")), tablo))
     for satir, veri in takimlar:
         if veri:
