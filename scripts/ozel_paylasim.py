@@ -28,6 +28,7 @@ import urllib.parse
 from datetime import datetime, timezone
 
 import bluesky_paylas as bp
+import bsky_ek
 import meta
 
 
@@ -111,6 +112,7 @@ def main():
 
     # 4. Bluesky (aynı zamanda "paylaşıldı" kaydı)
     handle, sifre = ortam("BLUESKY_HANDLE"), ortam("BLUESKY_APP_PASSWORD")
+    did = token = pds = None
     if handle and sifre:
         did, token, pds = bp.oturum_ac(handle, sifre)
         if adres.rstrip("/") in bp.paylasilmis_adresler(pds, did, token):
@@ -179,6 +181,21 @@ def main():
             print(f"::notice title={ad} paylaşıldı::{adres}")
         except Exception as e:  # noqa: BLE001
             print(f"::warning title={ad} gönderilemedi::{e}")
+
+    # 7. Rakibin aynı duyurusuna Bluesky'da tek satır laf sokma (kayfabe)
+    rakip, cevap = ortam("RAKIP_BLUESKY"), ortam("RAKIP_CEVAP")
+    if did and rakip and cevap and mac_no and istendi("bluesky"):
+        hedef = bsky_ek.link_iceren_gonderi(rakip, f"/mac/?id={mac_no}", 0 if dry_run else float(ortam("RAKIP_BEKLE", "40")))
+        if not hedef:
+            print(f"::warning title=Rakibe cevap yazılmadı::{rakip} gönderisi bulunamadı")
+        elif dry_run:
+            print("DRY_RUN rakibe cevap:", cevap)
+        else:
+            try:
+                bsky_ek.gonder(pds, did, token, cevap, cevap=hedef)
+                print(f"::notice title=Rakibe cevap yazıldı::{rakip}")
+            except Exception as e:  # noqa: BLE001
+                print(f"::warning title=Rakibe cevap yazılamadı::{e}")
 
 
 if __name__ == "__main__":

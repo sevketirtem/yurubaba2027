@@ -3,6 +3,7 @@
 #   - Zamanlanmış çalışma (cron, yedek): 26 Ekim 13:07 UTC başlar, hedef saate kadar bekler.
 #   - Claude ayrıca hedef saatten hemen önce elle (dispatch) tetikler.
 #   İki tetikleme çift gönderi yapmaz: adres Bluesky'da zaten paylaşılmışsa hiçbir yere gitmez.
+# İkinci iş (takip): maç boyunca her golü ve maç sonucunu paylaşır (scripts/mac_takip.py).
 # Derbiden sonra: cron satırı silinir ya da yeni duyuru için env değerleri değiştirilir.
 name: Özel duyuru paylaş
 
@@ -57,6 +58,36 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          RAKIP_BLUESKY: "hadibaba.bsky.social"
+          RAKIP_CEVAP: "Hadi yine 'hissediyorum' modunda. Biz isabetli şut sayısını bekliyoruz. Görürüz."
+          RAKIP_BEKLE: "40"
           META_SAYFA_ADI: "Yürü Baba"
           THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
         run: python3 scripts/ozel_paylasim.py
+
+  takip:
+    needs: paylas
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Golleri ve maç sonucunu paylaş
+        env:
+          SITE: https://yurubaba.com
+          SKOR_API: https://superlig-veri-ten.vercel.app
+          MAC: "Galatasaray-Fenerbahce"
+          SES: "yuru"
+          BASLIK: "Galatasaray - Fenerbahçe | Maç Merkezi"
+          ETIKETLER: "#SüperLig #derbi"
+          EN_GEC: "2026-10-27T00:30:00+03:00"
+          PLATFORMLAR: ${{ github.event_name == 'workflow_dispatch' && inputs.platformlar || '' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_SAYFA_ADI: "Yürü Baba"
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+        run: python3 scripts/mac_takip.py
