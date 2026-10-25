@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 import bluesky_paylas as bp
 import bsky_ek
 import meta
+import veri_cek
 from ozel_paylasim import api, maci_bul, ortam
 
 AD = {"Fenerbahce": "Fenerbahçe", "Besiktas": "Beşiktaş", "Basaksehir": "Başakşehir",
@@ -116,7 +117,7 @@ def main():
     skor_api, site = ortam("SKOR_API"), ortam("SITE").rstrip("/")
     platformlar = {p.strip().lower() for p in ortam("PLATFORMLAR").split(",") if p.strip()}
     m = maci_bul(skor_api, ortam("MAC"))
-    adres = f"{site}/mac/?id={m['id']}"
+    adres = f"{site}/maclar/{veri_cek.mac_yolu(m, veri_cek.sezon_tarihten(m['tarih']))}/"
     p = Paylasici(dry_run, platformlar, adres, ortam("BASLIK") or "Maç Merkezi",
                   ortam("ETIKETLER", "#SüperLig #derbi"))
     en_gec = datetime.fromisoformat(ortam("EN_GEC")) if ortam("EN_GEC") else None

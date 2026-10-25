@@ -30,6 +30,7 @@ from datetime import datetime, timezone
 import bluesky_paylas as bp
 import bsky_ek
 import meta
+import veri_cek
 
 
 def ortam(ad, varsayilan=""):
@@ -68,7 +69,8 @@ def main():
     if ortam("MAC"):
         m = maci_bul(skor_api, ortam("MAC"))
         mac_no, baslama = m["id"], datetime.fromisoformat(m["tarih"])
-        adres = f"{site}/mac/?id={mac_no}"
+        # Süper Lig maçının kalıcı sayfası (scripts/veri_cek.py üretir)
+        adres = f"{site}/maclar/{veri_cek.mac_yolu(m, veri_cek.sezon_tarihten(m['tarih']))}/"
         print(f"::notice title=Maç bulundu::{m['ev']} - {m['dep']} ({m['tarih']}) → {adres}")
     else:
         adres = ortam("ADRES")
@@ -185,7 +187,7 @@ def main():
     # 7. Rakibin aynı duyurusuna Bluesky'da tek satır laf sokma (kayfabe)
     rakip, cevap = ortam("RAKIP_BLUESKY"), ortam("RAKIP_CEVAP")
     if did and rakip and cevap and mac_no and istendi("bluesky"):
-        hedef = bsky_ek.link_iceren_gonderi(rakip, f"/mac/?id={mac_no}", 0 if dry_run else float(ortam("RAKIP_BEKLE", "40")))
+        hedef = bsky_ek.link_iceren_gonderi(rakip, urllib.parse.urlsplit(adres).path, 0 if dry_run else float(ortam("RAKIP_BEKLE", "40")))
         if not hedef:
             print(f"::warning title=Rakibe cevap yazılmadı::{rakip} gönderisi bulunamadı")
         elif dry_run:
