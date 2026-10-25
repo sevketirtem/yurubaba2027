@@ -48,8 +48,8 @@ jobs:
           SON_DAKIKA: "20"
           METIN_ILK11: "Derbi diye kalbimiz hızlanmadı. Galatasaray–Fenerbahçe ilk 11'leri açıklandı; kadrolar, olaylar ve istatistikler Maç Merkezi'nde. Tabelaya değil isabetli şuta bakın. Görürüz."
           METIN_ONCE: "Derbi diye kalbimiz hızlanmadı. Galatasaray–Fenerbahçe ilk 11'leri açıklanınca Maç Merkezi'nde; olaylar ve istatistikler de orada. Tabelaya değil isabetli şuta bakın. Görürüz."
-          ETIKETLER: "#futbol #derbi"
-          IG_ETIKETLER: "#futbol #derbi #süperlig #galatasaray #fenerbahçe"
+          ETIKETLER: "#SüperLig #Galatasaray #Fenerbahçe #derbi #futbol"
+          IG_ETIKETLER: "#SüperLig #Galatasaray #Fenerbahçe #derbi #futbol"
           PLATFORMLAR: ${{ github.event_name == 'workflow_dispatch' && inputs.platformlar || '' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
