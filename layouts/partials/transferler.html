@@ -1,0 +1,17 @@
+{{- /* Süper Lig kulüplerinin bu sezonki transferleri (derlemede, data/veri/transferler.json) */ -}}
+<section class="skor transferler" aria-label="Süper Lig transferleri">
+{{- with site.Data.veri.transferler }}{{ with .liste }}
+  <ul class="transfer-liste transfer-genis">
+  {{- range first 200 . }}
+    <li class="tr-{{ .yon }}">
+      <span class="tr-tarih">{{ partial "trtarih.html" (dict "t" .tarih "bicim" "tam") }}</span>
+      <span class="tr-oyuncu">{{ .oyuncu }}</span>
+      <span class="tr-karsi"><a href="{{ printf "takim/%s/" .takimSlug | relURL }}">{{ .takimAd | default .takim }}</a> {{ if eq .yon "gelen" }}← {{ else }}→ {{ end }}{{ .karsi }}</span>
+      <span class="tr-tur">{{ partial "transfer-tur.html" .tur }}</span>
+    </li>
+  {{- end }}
+  </ul>
+  <p class="skor-alt">Kesinleşmiş transferler (1 Haziran'dan beri), en yeniden eskiye. "←" kulübe gelen, "→" kulüpten giden. Söylentiler burada değil, Transfer Kulisi yazılarında. Son güncelleme {{ partial "trtarih.html" (dict "t" site.Data.veri.transferler.guncellendi "bicim" "kisa") }}.</p>
+{{- else }}<p class="empty">Bu sezon için kayıtlı transfer yok.</p>{{ end }}
+{{- else }}<p class="empty">Transfer listesi çok yakında burada.</p>{{ end }}
+</section>

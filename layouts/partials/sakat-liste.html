@@ -1,0 +1,10 @@
+{{- /* Sakat ve cezalılar, takım takım (derlemede; js/sakatlar.js yeniler). Girdi: liste */ -}}
+{{- $durum := dict "Missing Fixture" "Oynamayacak" "Questionable" "Şüpheli" -}}
+{{- with . }}
+{{- range $g := (sort (uniq (apply . "index" "." "takimAd")) "value") }}
+  {{- $oyuncular := where $ "takimAd" $g }}
+  <div class="sakat-takim"><h3><a href="{{ printf "takim/%s/" (index $oyuncular 0).takimSlug | relURL }}">{{ $g }}</a><span class="sakat-sayi"> {{ len $oyuncular }}</span></h3>
+    <ul class="sakat-liste">{{ range $oyuncular }}<li><span class="sakat-ad">{{ .oyuncu }}</span><span class="sakat-sebep">{{ partial "sebep.html" .sebep }}</span><span class="sakat-durum durum-{{ if eq .tur "Questionable" }}suphe{{ else }}yok{{ end }}">{{ index $durum .tur | default .tur }}</span></li>{{ end }}</ul>
+  </div>
+{{- end }}
+{{- else }}<p class="empty">Önümüzdeki maçlar için bildirilmiş sakat ya da cezalı oyuncu yok.</p>{{ end }}

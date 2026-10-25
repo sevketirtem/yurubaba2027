@@ -1,0 +1,4 @@
+{{- /* Transfer türü: "Free" → "Bedelsiz", "Loan" → "Kiralık", "€ 5M" olduğu gibi, "N/A" → "" */ -}}
+{{- $t := . | default "" -}}
+{{- $s := index (dict "Free" "Bedelsiz" "Loan" "Kiralık" "N/A" "" "Back from Loan" "Kiralıktan dönüş" "Return from loan" "Kiralıktan dönüş" "Transfer" "Bonservisli") $t -}}
+{{- return (cond (ne $s nil) $s $t) -}}

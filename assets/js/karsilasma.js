@@ -45,10 +45,10 @@
         var ul = el("ul", "takim-maclar");
         maclar.forEach(function (m) {
           var li = el("li"), x = el("a", "takim-mac kars-mac");
-          x.href = (macYolu || "/mac/") + "?id=" + m.id;
+          x.href = H.macYolu(m, macYolu || "/mac/");
           x.appendChild(el("span", "tm-tarih", new Date(m.tarih).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric", timeZone: H.TZ })));
           x.appendChild(el("span", "tm-rakip", ad(m.ev) + " " + m.evGol + "-" + m.depGol + " " + ad(m.dep)));
-          x.appendChild(el("span", "tm-lig", m.lig || ""));
+          x.appendChild(el("span", "tm-lig", H.lig(m.lig)));
           li.appendChild(x); ul.appendChild(li);
         });
         bolum.appendChild(ul);

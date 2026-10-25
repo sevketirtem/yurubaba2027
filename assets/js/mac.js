@@ -30,7 +30,7 @@
     var ust = el("div", "mac-ust");
     // Süper Lig/1. Lig: "10. hafta"; Avrupa kupaları: lig adı + tur ("League Stage - 3")
     var tur = m.hafta ? (/^\d+$/.test(m.hafta) ? m.hafta + ". hafta" : m.hafta) : null;
-    var lig = m.ligId && m.ligId !== 203 ? m.lig : null;
+    var lig = m.ligId && m.ligId !== 203 ? H.lig(m.lig) : null;
     var bilgi = [lig, tur, H.gun(m.tarih) + " " + H.saat(m.tarih), m.stat].filter(Boolean).join(" · ");
     ust.appendChild(el("p", "mac-bilgi", bilgi));
     var skorSatir = el("div", "mac-tabela" + (canli ? " canli" : ""));
@@ -160,7 +160,8 @@
   }
 
   document.querySelectorAll(".macsayfa[data-api]").forEach(function (kok) {
-    var id = new URLSearchParams(location.search).get("id");
+    // Kalıcı maç sayfasında numara data-id'de; /mac/ sayfasında adres çubuğunda (?id=)
+    var id = kok.getAttribute("data-id") || new URLSearchParams(location.search).get("id");
     if (!id || !/^\d+$/.test(id)) {
       var g = kok.querySelector(".mac-govde");
       g.textContent = "";

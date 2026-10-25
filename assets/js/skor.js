@@ -8,7 +8,7 @@
   function macSatiri(m, macYolu) {
     var satir = el(macYolu ? "a" : "div", "mac");
     if (macYolu) {
-      satir.href = macYolu + "?id=" + m.id;
+      satir.href = m.ligId === 204 || m.ligId === "204" ? macYolu + "?id=" + m.id : H.macYolu(m, macYolu);
       satir.title = ad(m.ev) + " - " + ad(m.dep) + ": kadrolar, olaylar, istatistik";
     }
     var canli = CANLI.indexOf(m.durum) >= 0, bitti = BITTI.indexOf(m.durum) >= 0;

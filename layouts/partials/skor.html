@@ -8,8 +8,8 @@
   {{- end }}
   {{- if site.Params.skorAPI }}
   <div class="skor-kolonlar">
-    <div><h3>{{ if eq $mod "ozet" }}Maçlar{{ else }}Bu haftanın maçları{{ end }}</h3><div class="skor-maclar"><p class="empty">Yükleniyor…</p></div></div>
-    <div><h3>Puan durumu</h3><div class="skor-puan"><p class="empty">Yükleniyor…</p></div></div>
+    <div><h3>{{ if eq $mod "ozet" }}Maçlar{{ else }}Bu haftanın maçları{{ end }}</h3><div class="skor-maclar">{{ if and (not $lig) (eq $mod "tam") site.Data.veri.maclar }}{{ partial "maclar-liste.html" site.Data.veri.maclar.maclar }}{{ else }}<p class="empty">Yükleniyor…</p>{{ end }}</div></div>
+    <div><h3>Puan durumu</h3><div class="skor-puan">{{ if and (not $lig) site.Data.veri.puan }}{{ partial "puan-tablosu.html" (dict "tablo" site.Data.veri.puan.tablo "ozet" (eq $mod "ozet")) }}{{ else }}<p class="empty">Yükleniyor…</p>{{ end }}</div></div>
   </div>
   <p class="skor-alt"></p>
   {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/skor.js") | resources.Concat "js/skor-paket.js" | minify | fingerprint }}

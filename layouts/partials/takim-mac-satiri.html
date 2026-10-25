@@ -1,0 +1,12 @@
+{{- /* Takım sayfası maç satırı. .m maç, .id takım no, .oynandi */ -}}
+  {{- $m := .m }}{{ $id := .id }}{{ $ic := eq $m.evId $id }}
+  <li><a class="takim-mac" href="{{ with $m.yol }}{{ . | relURL }}{{ else }}{{ printf "mac/?id=%v" $m.id | relURL }}{{ end }}">
+    <span class="tm-tarih">{{ partial "trtarih.html" (dict "t" $m.tarih "bicim" "kisa") }}{{ if not .oynandi }} {{ partial "trtarih.html" (dict "t" $m.tarih "bicim" "saat") }}{{ end }}</span>
+    <span class="tm-yer">{{ if $ic }}İç saha{{ else }}Deplasman{{ end }}</span>
+    <span class="tm-rakip">{{ if $ic }}{{ $m.depAd | default $m.dep }}{{ else }}{{ $m.evAd | default $m.ev }}{{ end }}</span>
+    {{- if and .oynandi (ne $m.evGol nil) }}
+      {{- $biz := cond $ic $m.evGol $m.depGol }}{{ $onlar := cond $ic $m.depGol $m.evGol }}
+      <span class="tm-skor sonuc-{{ if gt $biz $onlar }}G{{ else if lt $biz $onlar }}M{{ else }}B{{ end }}">{{ $biz }}-{{ $onlar }}</span>
+    {{- else }}<span class="tm-skor">-</span>{{ end }}
+    <span class="tm-lig">{{ partial "lig.html" $m.lig }}</span>
+  </a></li>

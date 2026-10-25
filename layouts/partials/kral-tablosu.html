@@ -1,0 +1,13 @@
+{{- /* Gol/asist krallığı tablosu (derlemede; js/krallar.js yeniler). .liste, .tur "gol"|"asist" */ -}}
+{{- $gol := eq .tur "gol" -}}
+<div class="tablo-sar"><table class="puan kral">
+  <thead><tr><th>#</th><th>Oyuncu</th><th>Takım</th><th>Maç</th>{{ if $gol }}<th>Pen.</th><th>Gol</th>{{ else }}<th>Gol</th><th>Asist</th>{{ end }}</tr></thead>
+  <tbody>
+  {{- $onceki := -1 }}{{ $sira := 0 }}
+  {{- range $i, $o := .liste }}
+    {{- if ne $o.sayi $onceki }}{{ $sira = add $i 1 }}{{ $onceki = $o.sayi }}{{ end }}
+    <tr><td>{{ $sira }}</td><td class="takim oyuncu">{{ $o.oyuncu }}</td><td class="kral-takim"><a href="{{ printf "takim/%s/" $o.takimSlug | relURL }}">{{ $o.takimAd | default $o.takim }}</a></td><td>{{ $o.mac }}</td>
+    {{- if $gol }}<td>{{ $o.penalti }}</td><td class="p">{{ $o.gol }}</td>{{ else }}<td>{{ $o.gol }}</td><td class="p">{{ $o.asist }}</td>{{ end }}</tr>
+  {{- end }}
+  </tbody>
+</table></div>

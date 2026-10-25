@@ -32,6 +32,16 @@ jobs:
           sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Depoyu al
         uses: actions/checkout@v4
+      # Yakın tarihli maçların ayrıntıları çalışmalar arasında saklanır (maç bitince de sayfada kalsın)
+      - name: Maç ayrıntıları önbelleği
+        uses: actions/cache@v4
+        with:
+          path: data/veri/mac
+          key: veri-mac-${{ github.run_id }}
+          restore-keys: veri-mac-
+      # Skor API'sinden verileri çeker, maç sayfalarını üretir (scripts/veri_cek.py); hata derlemeyi durdurmaz
+      - name: Verileri çek
+        run: python3 scripts/veri_cek.py
       - name: Pages ayarlarını al
         id: pages
         uses: actions/configure-pages@v5

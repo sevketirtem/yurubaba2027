@@ -7,7 +7,7 @@
   <div class="prose">
     <p>{{ printf site.Params.takimGiris .LinkTitle | safeHTML }}</p>
     {{ .Content }}
-    {{ partial "takim.html" (dict "ad" (.Params.apiAd | default .LinkTitle)) }}
+    {{ partial "takim.html" (dict "ad" (.Params.apiAd | default .LinkTitle) "slug" .File.ContentBaseName) }}
     <p>Veriler API-Football'dan otomatik alınır. Haftanın bütün maçları ve puan durumu için <a href="{{ "canli/" | relURL }}">Canlı Skor</a>, ligin bütün eksikleri için <a href="{{ "sakatlar/" | relURL }}">Sakat ve Cezalılar</a>, diğer kulüpler için <a href="{{ "takim/" | relURL }}">Takımlar</a>.</p>
   </div>
 </article>

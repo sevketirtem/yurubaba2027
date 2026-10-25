@@ -1,0 +1,3 @@
+{{- /* Lig/kupa adını Türkçeye çevirir (adlar.js'teki LIG ile aynı) */ -}}
+{{- $l := dict "UEFA Champions League" "Şampiyonlar Ligi" "UEFA Europa League" "Avrupa Ligi" "UEFA Europa Conference League" "Konferans Ligi" "UEFA Conference League" "Konferans Ligi" "Super Lig" "Süper Lig" "Süper Lig" "Süper Lig" "1. Lig" "1. Lig" "Cup" "Türkiye Kupası" "Turkish Cup" "Türkiye Kupası" "Super Cup" "Süper Kupa" "World Cup - Qualification Europe" "Dünya Kupası Elemeleri" "World Cup" "Dünya Kupası" "UEFA Nations League" "UEFA Uluslar Ligi" "Friendlies" "Hazırlık maçı" "Euro Championship - Qualification" "EURO Elemeleri" "Euro Championship" "EURO" "Club Friendlies" "Hazırlık maçı" -}}
+{{- return (index $l (. | default "") | default .) -}}

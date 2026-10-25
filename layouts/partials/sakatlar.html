@@ -1,7 +1,7 @@
 {{- /* Süper Lig sakat ve cezalı oyuncular. js/sakatlar.js (adlar.js ile paketlenir) */ -}}
 <section class="skor sakatlar"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-mac="{{ "mac/" | relURL }}" aria-label="Süper Lig sakat ve cezalı oyuncular">
   {{- if site.Params.skorAPI }}
-  <div class="sakat-govde"><p class="empty">Yükleniyor…</p></div>
+  <div class="sakat-govde">{{ with site.Data.veri.sakat }}{{ partial "sakat-liste.html" .liste }}{{ else }}<p class="empty">Yükleniyor…</p>{{ end }}</div>
   <p class="skor-alt"></p>
   {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/sakatlar.js") | resources.Concat "js/sakatlar-paket.js" | minify | fingerprint }}
   <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>

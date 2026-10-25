@@ -1,0 +1,3 @@
+{{- /* API takım adını Türkçe yazımına çevirir (adlar.js'teki AD ile aynı). Kullanım: "Fenerbahce" | partial "trad.html" */ -}}
+{{- $ad := dict "Fenerbahce" "Fenerbahçe" "Besiktas" "Beşiktaş" "Istanbul Basaksehir" "Başakşehir" "Basaksehir" "Başakşehir" "Kasimpasa" "Kasımpaşa" "Goztepe" "Göztepe" "Eyupspor" "Eyüpspor" "Rizespor" "Çaykur Rizespor" "Caykur Rizespor" "Çaykur Rizespor" "Genclerbirligi" "Gençlerbirliği" "Gençlerbirliği S.K." "Gençlerbirliği" "Amed SK" "Amedspor" "Amed" "Amedspor" "Gaziantep" "Gaziantep FK" "Corum FK" "Çorum FK" "Erzurumspor FK" "Erzurumspor" "Turkey" "Türkiye" -}}
+{{- return (index $ad . | default .) -}}

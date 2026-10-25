@@ -1,0 +1,11 @@
+{{- /* Puan tablosu (derlemede; js/skor.js açılışta yeniler). .tablo, .ozet */ -}}
+{{- $tablo := .tablo | default slice }}{{ if .ozet }}{{ $tablo = first 5 $tablo }}{{ end -}}
+<div class="tablo-sar"><table class="puan">
+  <thead><tr>{{ if .ozet }}<th>#</th><th>Takım</th><th>O</th><th>AV</th><th>P</th>{{ else }}<th>#</th><th>Takım</th><th>O</th><th>G</th><th>B</th><th>M</th><th>A</th><th>Y</th><th>AV</th><th>P</th>{{ end }}</tr></thead>
+  <tbody>
+  {{- range $tablo }}
+    <tr><td>{{ .sira }}</td><td class="takim"><a href="{{ printf "takim/%s/" .takimSlug | relURL }}">{{ .takimAd | default .takim }}</a></td><td>{{ .o }}</td>
+    {{- if not $.ozet }}<td>{{ .g }}</td><td>{{ .b }}</td><td>{{ .m }}</td><td>{{ .a }}</td><td>{{ .y }}</td>{{ end }}<td>{{ .av }}</td><td class="p">{{ .p }}</td></tr>
+  {{- end }}
+  </tbody>
+</table></div>

@@ -6,6 +6,10 @@ timeZone = "Europe/Istanbul"
 enableRobotsTXT = true
 summaryLength = 40
 
+# RSS'te yalnızca son 50 sayfa (yazılar önce gelir; tarihsiz maç/takım sayfaları sona düşer)
+[services.rss]
+  limit = 50
+
 [pagination]
   pagerSize = 10
 
@@ -37,6 +41,9 @@ summaryLength = 40
   # Takım sayfalarının giriş cümlesi (%s = takım adı)
   takimGiris = "<strong>%s</strong> için duygu yok, rakam var: son 5 maç, sıradaki rakipler, puan sırası, kadro ve eksikler. %[1]s hakkında karar vereceksen önce tabloya bak."
 
+  # Maç sayfalarının giriş cümlesi (1. %s = maç, 2. %s = tarih)
+  macGiris = "<strong>%s</strong>. Tarih: %s. Kadrolar, olaylar ve istatistikler burada. Skordan önce isabetli şuta ve topla oynamaya bakın, maçı onlar anlatır. Görürüz."
+
   closingQuestion = "Siz ne diyorsunuz? Rakamla gelin, yorumlara yazın."
 
   # Yorumlar (Waline, kendi sunucumuz; iki site ortak).
@@ -57,18 +64,22 @@ summaryLength = 40
   [[menus.main]]
     name = "Canlı Skor"
     url = "/canli/"
-    weight = -4
+    weight = -5
   [[menus.main]]
     name = "Takımlar"
     url = "/takim/"
-    weight = -3
+    weight = -4
   [[menus.main]]
     name = "Gol Krallığı"
     url = "/krallar/"
-    weight = -2
+    weight = -3
   [[menus.main]]
     name = "Avrupa"
     url = "/avrupa/"
+    weight = -2
+  [[menus.main]]
+    name = "Milli Takım"
+    url = "/milli/"
     weight = -1
   [[menus.main]]
     name = "Maç Önü"

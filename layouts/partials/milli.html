@@ -1,0 +1,23 @@
+{{- /* A Milli Takım: maçlar ve kadro (derlemede, data/veri/milli.json) */ -}}
+<section class="skor milli" aria-label="A Milli Takım">
+{{- with site.Data.veri.milli }}
+  {{- $id := .takim.id }}
+    <div class="mac-bolum"><h2>Sıradaki maçlar</h2>
+    {{- with .sonraki }}<ul class="takim-maclar">{{ range . }}{{ partial "milli-mac.html" (dict "m" . "id" $id "oynandi" false) }}{{ end }}</ul>{{ else }}<p class="empty">Planlanmış maç yok.</p>{{ end }}
+  </div>
+  <div class="mac-bolum"><h2>Son 5 maç</h2>
+    {{- with .son }}<ul class="takim-maclar">{{ range . }}{{ partial "milli-mac.html" (dict "m" . "id" $id "oynandi" true) }}{{ end }}</ul>{{ else }}<p class="empty">Henüz maç yok.</p>{{ end }}
+  </div>
+  {{- with .kadro }}{{ $k := . }}
+  <div class="mac-bolum"><h2>Son açıklanan kadro</h2>
+    <div class="kadrolar kadro-4">
+    {{- range $g := slice "Kaleci" "Defans" "Orta saha" "Forvet" }}{{ with where $k "mevki" $g }}
+      <div class="kadro"><h4>{{ $g }}</h4><ul class="kadro-liste">{{ range . }}<li><span class="kadro-no">{{ .no }}</span><span class="kadro-ad">{{ .ad }}</span><span class="kadro-mevki">{{ .yas }}</span></li>{{ end }}</ul></div>
+    {{- end }}{{ end }}
+    </div>
+    <p class="skor-alt">Sağdaki sayı oyuncunun yaşı. Yurt dışında oynayanların bu sezonu için <a href="{{ "gurbetciler/" | relURL }}">Yurt Dışındaki Milliler</a>.</p>
+  </div>
+  {{- end }}
+  <p class="skor-alt">Son güncelleme {{ partial "trtarih.html" (dict "t" .guncellendi "bicim" "kisa") }}.</p>
+{{- else }}<p class="empty">Milli takım bilgileri çok yakında burada.</p>{{ end }}
+</section>

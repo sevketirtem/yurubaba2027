@@ -1,0 +1,27 @@
+{{ define "main" }}
+{{- $p := .Params -}}
+{{- $d := index (site.Data.veri.mac | default dict) (string $p.macId) -}}
+<article class="post">
+  <header class="post-head">
+    <p class="meta"><a class="tag" href="{{ "maclar/" | relURL }}">Maçlar</a></p>
+    <h1>{{ .LinkTitle }}</h1>
+  </header>
+  <div class="prose"><p>{{ printf site.Params.macGiris .LinkTitle (partial "trtarih.html" (dict "t" $p.tarih "bicim" "tam")) | safeHTML }}</p></div>
+  <section class="skor macsayfa"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-id="{{ $p.macId }}" data-canli="{{ "canli/" | relURL }}" data-mac="{{ "mac/" | relURL }}" aria-label="{{ .LinkTitle }} maç ayrıntısı">
+    <div class="mac-govde">{{ partial "mac-govde.html" (dict "p" $p "d" $d) }}</div>
+    <p class="skor-alt"></p>
+    {{- if site.Params.skorAPI }}
+    {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/karsilasma.js") (resources.Get "js/mac.js") | resources.Concat "js/mac-paket.js" | minify | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+    {{- end }}
+  </section>
+  <div class="prose">
+    <p>İki takımın bütün bilgileri: <a href="{{ printf "takim/%s/" $p.evSlug | relURL }}">{{ $p.ev | partial "trad.html" }}</a> ve <a href="{{ printf "takim/%s/" $p.depSlug | relURL }}">{{ $p.dep | partial "trad.html" }}</a>. Haftanın bütün maçları ve puan durumu için <a href="{{ "canli/" | relURL }}">Canlı Skor</a>, sezonun bütün maçları için <a href="{{ "maclar/" | relURL }}">Maçlar</a>.</p>
+    <p class="skor-alt">Veriler API-Football'dan alınır; maç oynanırken sayfa kendiliğinden yenilenir.</p>
+  </div>
+  {{- /* Google için maç bilgisi (schema.org SportsEvent) */ -}}
+  {{- $durumlar := dict "PST" "EventPostponed" "CANC" "EventCancelled" -}}
+  {{- $ld := dict "@context" "https://schema.org" "@type" "SportsEvent" "name" .LinkTitle "description" .Description "url" .Permalink "startDate" $p.tarih "sport" "Futbol" "eventStatus" (printf "https://schema.org/%s" (index $durumlar $p.durum | default "EventScheduled")) "eventAttendanceMode" "https://schema.org/OfflineEventAttendanceMode" "homeTeam" (dict "@type" "SportsTeam" "name" ($p.ev | partial "trad.html")) "awayTeam" (dict "@type" "SportsTeam" "name" ($p.dep | partial "trad.html")) "location" (dict "@type" "Place" "name" ($p.stat | default "Stat") "address" (dict "@type" "PostalAddress" "addressLocality" ($p.sehir | default "") "addressCountry" "TR")) "organizer" (dict "@type" "SportsOrganization" "name" "Süper Lig") -}}
+  <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+</article>
+{{ end }}

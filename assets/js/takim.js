@@ -32,7 +32,7 @@
     maclar.forEach(function (m) {
       var li = el("li");
       var a = el("a", "takim-mac");
-      a.href = macYolu + "?id=" + m.id;
+      a.href = H.macYolu(m, macYolu);
       a.appendChild(el("span", "tm-tarih", H.tarih(m.tarih) + (oynandi ? "" : " " + H.saat(m.tarih))));
       var ic = m.evId === id;
       a.appendChild(el("span", "tm-yer", ic ? "İç saha" : "Deplasman"));
@@ -43,7 +43,7 @@
         oynandi && m.evGol != null ? (ic ? m.evGol + "-" + m.depGol : m.depGol + "-" + m.evGol) : (H.DURUM[m.durum] || "-"));
       if (harf) skor.title = SONUC[harf][1];
       a.appendChild(skor);
-      a.appendChild(el("span", "tm-lig", m.lig || ""));
+      a.appendChild(el("span", "tm-lig", H.lig(m.lig)));
       li.appendChild(a);
       ul.appendChild(li);
     });
@@ -100,6 +100,20 @@
       b3.appendChild(ul);
     } else b3.appendChild(el("p", "empty", "Bildirilmiş sakat ya da cezalı oyuncu yok."));
     govde.appendChild(b3);
+
+    if (t.transferler && t.transferler.length) {
+      var b5 = bolum("Bu sezonki transferler"), ul5 = el("ul", "transfer-liste");
+      t.transferler.slice(0, 30).forEach(function (x) {
+        var li = el("li", "tr-" + x.yon);
+        li.appendChild(el("span", "tr-yon", x.yon === "gelen" ? "Gelen" : "Giden"));
+        li.appendChild(el("span", "tr-oyuncu", x.oyuncu));
+        li.appendChild(el("span", "tr-karsi", (x.yon === "gelen" ? "← " : "→ ") + (x.karsi || "")));
+        li.appendChild(el("span", "tr-tur", H.transferTur(x.tur)));
+        ul5.appendChild(li);
+      });
+      b5.appendChild(ul5);
+      govde.appendChild(b5);
+    }
 
     var b4 = bolum("Kadro");
     if (t.kadro.length) {

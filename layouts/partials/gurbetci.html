@@ -1,0 +1,11 @@
+{{- /* Yurt dışındaki milli oyuncuların bu sezonu (derlemede, data/veri/gurbetci.json) */ -}}
+<section class="skor gurbetci" aria-label="Yurt dışında oynayan milli oyuncular">
+{{- with site.Data.veri.gurbetci }}{{ with .liste }}
+  <div class="tablo-sar"><table class="puan kral">
+    <thead><tr><th>Oyuncu</th><th>Kulüp</th><th>Ülke</th><th>Maç</th><th>Dk</th><th>Gol</th><th>Asist</th><th>Puan</th></tr></thead>
+    <tbody>{{ range . }}<tr><td class="takim oyuncu">{{ .ad }}</td><td class="kral-takim">{{ .takim }}</td><td class="kral-takim">{{ partial "ulke.html" .ulke }}</td><td>{{ .mac }}</td><td>{{ .dakika }}</td><td>{{ .gol }}</td><td>{{ .asist }}</td><td class="p">{{ .puan | default "-" }}</td></tr>{{ end }}</tbody>
+  </table></div>
+  <p class="skor-alt">Bu sezonki kulüp maçları (lig ve kupalar), en çok süre alandan aza. "Puan": API-Football'un ortalama maç puanı. Son güncelleme {{ partial "trtarih.html" (dict "t" site.Data.veri.gurbetci.guncellendi "bicim" "kisa") }}.</p>
+{{- else }}<p class="empty">Bu sezon yurt dışında oynayan milli oyuncu verisi henüz yok.</p>{{ end }}
+{{- else }}<p class="empty">Liste çok yakında burada.</p>{{ end }}
+</section>

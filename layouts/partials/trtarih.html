@@ -1,0 +1,16 @@
+{{- /* Türkçe tarih metni döndürür. Kullanım: partial "trtarih.html" (dict "t" "2026-10-26T21:30:00+03:00" "bicim" "gun|tam|kisa|saat")
+       gun: "26 Ekim Pazartesi 21:30" · gunadi: "26 Ekim Pazartesi" · tam: "26 Ekim 2026" · kisa: "26 Ekim" · saat: "21:30" */ -}}
+{{- $aylar := slice "Ocak" "Şubat" "Mart" "Nisan" "Mayıs" "Haziran" "Temmuz" "Ağustos" "Eylül" "Ekim" "Kasım" "Aralık" -}}
+{{- $gunler := slice "Pazar" "Pazartesi" "Salı" "Çarşamba" "Perşembe" "Cuma" "Cumartesi" -}}
+{{- $s := "" -}}
+{{- with .t -}}
+  {{- $t := time.AsTime . -}}
+  {{- $ay := index $aylar (sub (int $t.Month) 1) -}}
+  {{- $b := $.bicim | default "tam" -}}
+  {{- if eq $b "gun" }}{{ $s = printf "%d %s %s %s" $t.Day $ay (index $gunler (int $t.Weekday)) ($t.Format "15:04") }}
+  {{- else if eq $b "gunadi" }}{{ $s = printf "%d %s %s" $t.Day $ay (index $gunler (int $t.Weekday)) }}
+  {{- else if eq $b "kisa" }}{{ $s = printf "%d %s" $t.Day $ay }}
+  {{- else if eq $b "saat" }}{{ $s = $t.Format "15:04" }}
+  {{- else }}{{ $s = printf "%d %s %d" $t.Day $ay $t.Year }}{{ end -}}
+{{- end -}}
+{{- return $s -}}

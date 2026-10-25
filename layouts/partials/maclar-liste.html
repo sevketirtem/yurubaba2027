@@ -1,0 +1,14 @@
+{{- /* Haftanın maçları (derlemede; js/skor.js açılışta yeniler). Girdi: maç listesi */ -}}
+{{- $canli := slice "1H" "HT" "2H" "ET" "BT" "P" "LIVE" "INT" "SUSP" }}{{ $bitti := slice "FT" "AET" "PEN" -}}
+{{- $sonGun := "" }}
+{{- range sort . "tarih" }}
+  {{- $g := partial "trtarih.html" (dict "t" .tarih "bicim" "gunadi") }}
+  {{- if ne $g $sonGun }}<div class="mac-gun">{{ $g }}</div>{{ $sonGun = $g }}{{ end }}
+  {{- $oyn := or (in $canli .durum) (in $bitti .durum) }}
+  <a class="mac{{ if in $canli .durum }} canli{{ end }}" href="{{ with .yol }}{{ . | relURL }}{{ else }}{{ printf "mac/?id=%v" .id | relURL }}{{ end }}">
+    <span class="mac-durum">{{ if in $bitti .durum }}MS{{ else if in $canli .durum }}Canlı{{ else }}{{ partial "trtarih.html" (dict "t" .tarih "bicim" "saat") }}{{ end }}</span>
+    <span class="mac-ev">{{ .evAd | default .ev }}</span>
+    <span class="mac-skor">{{ if and $oyn (ne .evGol nil) }}{{ .evGol }} - {{ .depGol }}{{ else }}-{{ end }}</span>
+    <span class="mac-dep">{{ .depAd | default .dep }}</span>
+  </a>
+{{- end }}

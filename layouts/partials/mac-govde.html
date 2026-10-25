@@ -1,0 +1,78 @@
+{{- /* Maç sayfasının derlemede üretilen hâli (js/mac.js sayfa açılınca canlı veriyle yeniler).
+       .p = maç sayfasının front matter'ı, .d = data/veri/mac/<no>.json (varsa) */ -}}
+{{- $p := .p -}}{{- $d := .d -}}
+{{- $canli := slice "1H" "HT" "2H" "ET" "BT" "P" "LIVE" "INT" "SUSP" -}}
+{{- $bitti := slice "FT" "AET" "PEN" -}}
+{{- $durum := $p.durum | default "NS" -}}
+{{- with $d }}{{ $durum = .durum | default $durum }}{{ end -}}
+{{- $evGol := $p.evGol }}{{ $depGol := $p.depGol }}
+{{- with $d }}{{ $evGol = .evGol }}{{ $depGol = .depGol }}{{ end -}}
+{{- $oynandi := and (or (in $canli $durum) (in $bitti $durum)) (ne $evGol nil) -}}
+<div class="mac-ust">
+  <p class="mac-bilgi">{{ with $p.hafta }}{{ . }}. hafta · {{ end }}{{ partial "trtarih.html" (dict "t" $p.tarih "bicim" "gun") }}{{ with $p.stat }} · {{ . }}{{ end }}</p>
+  <div class="mac-tabela{{ if in $canli $durum }} canli{{ end }}">
+    <span class="tabela-ev"><a href="{{ printf "takim/%s/" $p.evSlug | relURL }}">{{ $p.ev | partial "trad.html" }}</a></span>
+    <span class="tabela-skor">{{ if $oynandi }}{{ $evGol }} - {{ $depGol }}{{ else }}{{ partial "trtarih.html" (dict "t" $p.tarih "bicim" "saat") }}{{ end }}</span>
+    <span class="tabela-dep"><a href="{{ printf "takim/%s/" $p.depSlug | relURL }}">{{ $p.dep | partial "trad.html" }}</a></span>
+  </div>
+  <p class="mac-durumu">{{ if in $bitti $durum }}Maç sonu{{ else if in $canli $durum }}Canlı{{ else if eq $durum "PST" }}Ertelendi{{ else if eq $durum "CANC" }}İptal{{ else }}Başlamadı{{ end }}{{ with $d }}{{ with .iy }}{{ if and (ne .home nil) $oynandi }} · İY {{ .home }}-{{ .away }}{{ end }}{{ end }}{{ end }}</p>
+  {{ with $p.hakem }}<p class="mac-hakem">Hakem: {{ . }}</p>{{ end }}
+</div>
+{{- with $d }}
+{{- $ev := .ev }}
+{{- with .olaylar }}
+<div class="mac-bolum"><h2>Maçın olayları</h2>
+  <ol class="olaylar">
+  {{- range . }}
+    {{- $metin := "" }}{{ $ikon := "•" }}
+    {{- if eq .tur "Goal" }}
+      {{- $ikon = cond (eq .detay "Missed Penalty") "✖" "⚽" }}
+      {{- $etiket := index (dict "Normal Goal" "Gol" "Own Goal" "Kendi kalesine" "Penalty" "Penaltı golü" "Missed Penalty" "Kaçan penaltı") .detay | default "Gol" }}
+      {{- $metin = printf "%s: %s" $etiket (.oyuncu | default "?") }}
+      {{- if and .yardimci (ne .detay "Own Goal") }}{{ $metin = printf "%s (asist: %s)" $metin .yardimci }}{{ end }}
+    {{- else if eq .tur "Card" }}
+      {{- $ikon = cond (eq .detay "Yellow Card") "🟨" "🟥" }}
+      {{- $metin = printf "%s: %s" (cond (eq .detay "Yellow Card") "Sarı kart" "Kırmızı kart") (.oyuncu | default "?") }}
+    {{- else if eq .tur "subst" }}
+      {{- $ikon = "⇄" }}{{ $metin = printf "Değişiklik: %s ↔ %s" (.oyuncu | default "?") (.yardimci | default "?") }}
+    {{- else if eq .tur "Var" }}
+      {{- $var := dict "Goal cancelled" "gol iptal" "Goal Disallowed" "gol iptal" "Penalty confirmed" "penaltı verildi" "Penalty cancelled" "penaltı iptal" "Goal confirmed" "gol onaylandı" "Card upgrade" "kart değişti" }}
+      {{- $ikon = "📺" }}{{ $metin = printf "VAR: %s" (index $var .detay | default .detay | default "inceleme") }}{{ with .oyuncu }}{{ $metin = printf "%s (%s)" $metin . }}{{ end }}
+    {{- end }}
+    <li class="olay olay-{{ .taraf }}{{ if and (eq .tur "Goal") (ne .detay "Missed Penalty") }} gol{{ end }}">
+      <span class="olay-dk">{{ if or (not .dk) (le .dk 0) }}Önce{{ else }}{{ .dk }}{{ with .ek }}+{{ . }}{{ end }}'{{ end }}</span>
+      <span class="olay-ikon">{{ $ikon }}</span><span class="olay-metin">{{ $metin }}</span>
+      <span class="olay-takim">{{ cond (eq .taraf "ev") ($p.ev | partial "trad.html") ($p.dep | partial "trad.html") }}</span>
+    </li>
+  {{- end }}
+  </ol>
+</div>
+{{- end }}
+{{- with .istatistik }}
+<div class="mac-bolum"><h2>İstatistikler</h2>
+  <div class="istatistik">
+    <div class="ist-satir ist-bas"><span class="ist-ev">{{ $p.ev | partial "trad.html" }}</span><span class="ist-dep">{{ $p.dep | partial "trad.html" }}</span></div>
+    {{- range . }}
+    {{- $a := float (replace (string .ev) "%" "") }}{{ $b := float (replace (string .dep) "%" "") }}
+    <div class="ist-satir"><span class="ist-ev">{{ .ev }}</span><span class="ist-ad">{{ .ad }}</span><span class="ist-dep">{{ .dep }}</span>
+      <div class="ist-cubuk"><i class="ist-sol" style="width:{{ if gt (add $a $b) 0 }}{{ div (mul $a 100) (add $a $b) }}{{ else }}50{{ end }}%"></i></div></div>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
+{{- with .kadro }}
+<div class="mac-bolum"><h2>İlk 11'ler</h2>
+  <div class="kadrolar">
+  {{- range $taraf := slice "ev" "dep" }}{{ with index $.d.kadro $taraf }}
+    <div class="kadro"><h3>{{ index $p $taraf | partial "trad.html" }}{{ with .dizilis }} ({{ . }}){{ end }}</h3>
+      {{ with .hoca }}<p class="kadro-hoca">Teknik direktör: {{ . }}</p>{{ end }}
+      <h4>İlk 11</h4><ul class="kadro-liste">{{ range .ilk11 }}<li><span class="kadro-no">{{ .no }}</span><span class="kadro-ad">{{ .ad }}</span><span class="kadro-mevki">{{ index (dict "G" "K" "D" "D" "M" "O" "F" "F") (.mevki | default "") }}</span></li>{{ end }}</ul>
+      {{ with .yedek }}<h4>Yedekler</h4><ul class="kadro-liste">{{ range . }}<li><span class="kadro-no">{{ .no }}</span><span class="kadro-ad">{{ .ad }}</span><span class="kadro-mevki">{{ index (dict "G" "K" "D" "D" "M" "O" "F" "F") (.mevki | default "") }}</span></li>{{ end }}</ul>{{ end }}
+    </div>
+  {{- end }}{{ end }}
+  </div>
+</div>
+{{- end }}
+{{- else }}
+<div class="mac-bolum"><h2>İlk 11'ler</h2><p class="empty">{{ if in $bitti $durum }}Maç ayrıntıları yükleniyor…{{ else }}İlk 11'ler genellikle maçtan yaklaşık 1 saat önce açıklanır; bu sayfa kendiliğinden yenilenir.{{ end }}</p></div>
+{{- end }}

@@ -1,0 +1,41 @@
+{{- /* Takım sayfasının derlemede üretilen hâli (js/takim.js açılışta canlı veriyle yeniler).
+       .t = data/veri/takim/<slug>.json, .s = puan tablosundaki satırı */ -}}
+{{- $t := .t }}{{ $s := .s -}}
+{{- $id := $t.takim.id -}}
+<div class="takim-ozet">
+  {{- with $s }}
+  <div class="ozet-kutu"><b>{{ .sira }}.</b><span>Sıra</span></div>
+  <div class="ozet-kutu"><b>{{ .p }}</b><span>Puan</span></div>
+  <div class="ozet-kutu"><b>{{ .o }}-{{ .g }}-{{ .b }}-{{ .m }}</b><span>O-G-B-M</span></div>
+  <div class="ozet-kutu"><b>{{ if gt .av 0 }}+{{ end }}{{ .av }}</b><span>Averaj</span></div>
+  <div class="ozet-kutu ozet-form"><span class="form">{{ range split .form "" }}{{ with index (dict "W" "G" "D" "B" "L" "M") . }}<i class="form-{{ . }}">{{ . }}</i>{{ end }}{{ end }}</span><span>Son 5 maç formu</span></div>
+  {{- end }}
+</div>
+{{- with $t.stat }}{{ if .ad }}<p class="mac-hakem">Stat: {{ .ad }}{{ with .sehir }}, {{ . }}{{ end }}{{ with .kapasite }} ({{ lang.FormatNumberCustom 0 . "- , ." }} kişilik){{ end }}{{ with $t.takim.kurulus }} · Kuruluş: {{ . }}{{ end }}</p>{{ end }}{{ end }}
+<div class="mac-bolum"><h2>Sıradaki maçlar</h2>
+  {{- with $t.sonraki }}<ul class="takim-maclar">{{ range . }}{{ partial "takim-mac-satiri.html" (dict "m" . "id" $id "oynandi" false) }}{{ end }}</ul>{{ else }}<p class="empty">Planlanmış maç yok.</p>{{ end }}
+</div>
+<div class="mac-bolum"><h2>Son 5 maç</h2>
+  {{- with $t.son }}<ul class="takim-maclar">{{ range . }}{{ partial "takim-mac-satiri.html" (dict "m" . "id" $id "oynandi" true) }}{{ end }}</ul>{{ else }}<p class="empty">Henüz maç yok.</p>{{ end }}
+</div>
+{{- $durum := dict "Missing Fixture" "Oynamayacak" "Questionable" "Şüpheli" }}
+<div class="mac-bolum"><h2>Sakat ve cezalılar</h2>
+  {{- with $t.sakatlar }}<ul class="sakat-liste">{{ range . }}<li><span class="sakat-ad">{{ .oyuncu }}</span><span class="sakat-sebep">{{ partial "sebep.html" .sebep }}</span><span class="sakat-durum durum-{{ if eq .tur "Questionable" }}suphe{{ else }}yok{{ end }}">{{ index $durum .tur | default .tur }}</span></li>{{ end }}</ul>
+  {{- else }}<p class="empty">Bildirilmiş sakat ya da cezalı oyuncu yok.</p>{{ end }}
+</div>
+{{- with $t.transferler }}
+<div class="mac-bolum"><h2>Bu sezonki transferler</h2>
+  <ul class="transfer-liste">{{ range first 30 . }}<li class="tr-{{ .yon }}"><span class="tr-yon">{{ if eq .yon "gelen" }}Gelen{{ else }}Giden{{ end }}</span><span class="tr-oyuncu">{{ .oyuncu }}</span><span class="tr-karsi">{{ if eq .yon "gelen" }}← {{ else }}→ {{ end }}{{ .karsi }}</span><span class="tr-tur">{{ partial "transfer-tur.html" .tur }}</span></li>{{ end }}</ul>
+</div>
+{{- end }}
+<div class="mac-bolum"><h2>Kadro</h2>
+  {{- with $t.kadro }}
+  <div class="kadrolar kadro-4">
+    {{- range $g := slice "Kaleci" "Defans" "Orta saha" "Forvet" }}
+      {{- $oy := where $t.kadro "mevki" $g }}
+      {{- with $oy }}<div class="kadro"><h4>{{ $g }}</h4><ul class="kadro-liste">{{ range . }}<li><span class="kadro-no">{{ .no }}</span><span class="kadro-ad">{{ .ad }}</span><span class="kadro-mevki">{{ .yas }}</span></li>{{ end }}</ul></div>{{ end }}
+    {{- end }}
+  </div>
+  <p class="skor-alt">Sağdaki sayı oyuncunun yaşı.</p>
+  {{- else }}<p class="empty">Kadro bilgisi yok.</p>{{ end }}
+</div>

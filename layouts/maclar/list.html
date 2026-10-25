@@ -1,0 +1,22 @@
+{{ define "main" }}
+<article class="post">
+  <header class="post-head"><h1>{{ .Title }}</h1></header>
+  <div class="prose">{{ .Content }}</div>
+  {{- $sayfalar := sort .RegularPages "Params.tarih" }}
+  {{- if $sayfalar }}
+  <section class="skor maclistesi">
+    {{- $sonHafta := "" }}
+    {{- range $sayfalar }}
+      {{- if ne .Params.hafta $sonHafta }}{{ $sonHafta = .Params.hafta }}<h2 class="hafta-baslik" id="hafta-{{ .Params.hafta }}">{{ .Params.hafta }}. hafta</h2>{{ end }}
+      {{- $bitti := in (slice "FT" "AET" "PEN") .Params.durum }}
+      <a class="mac" href="{{ .RelPermalink }}">
+        <span class="mac-durum">{{ if $bitti }}MS{{ else }}{{ partial "trtarih.html" (dict "t" .Params.tarih "bicim" "kisa") }}{{ end }}</span>
+        <span class="mac-ev">{{ .Params.ev | partial "trad.html" }}</span>
+        <span class="mac-skor">{{ if and $bitti (ne .Params.evGol nil) }}{{ .Params.evGol }} - {{ .Params.depGol }}{{ else }}{{ partial "trtarih.html" (dict "t" .Params.tarih "bicim" "saat") }}{{ end }}</span>
+        <span class="mac-dep">{{ .Params.dep | partial "trad.html" }}</span>
+      </a>
+    {{- end }}
+  </section>
+  {{- else }}<p class="empty">Maç listesi çok yakında burada.</p>{{ end }}
+</article>
+{{ end }}
