@@ -29,7 +29,7 @@ summaryLength = 40
   rivalURL = "https://hadibaba.com/"
   rivalJab = "Pembe gözlükle futbol izlemek isteyenler için:"
   # Canlı skor / puan durumu veri adresi (skor-api/ Vercel projesi). Boşsa "çok yakında".
-  skorAPI = ""
+  skorAPI = "https://superlig-veri-ten.vercel.app"
 
   # Ziyaretçi sayacı (GoatCounter): https://yurubaba.goatcounter.com — boş bırakılırsa sayaç kapanır.
   goatcounter = "yurubaba"
