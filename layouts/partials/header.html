@@ -4,6 +4,11 @@
       <span class="brand-name">{{ site.Title }}</span>
       <span class="brand-slogan">{{ site.Params.slogan }}</span>
     </a>
+    {{- with site.Params.sosyal }}
+    <ul class="sosyal" aria-label="Bizi takip edin">
+      {{- range . }}<li><a href="{{ .url }}" rel="me noopener" target="_blank">{{ .ad }}</a></li>{{ end }}
+    </ul>
+    {{- end }}
   </div>
   <nav class="nav" aria-label="Ana menü">
     <div class="wrap nav-inner">

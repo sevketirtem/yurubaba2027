@@ -42,11 +42,19 @@ summaryLength = 40
     serverURL = "https://yorum.hadibaba.com"
     placeholder = "Rakamla gel, duyguyla değil."
 
+  # Sosyal medya (başlıkta her sayfada görünür; partials/header.html)
+  [[params.sosyal]]
+    ad = "Bluesky"
+    url = "https://bsky.app/profile/yurubaba.bsky.social"
+  [[params.sosyal]]
+    ad = "Telegram"
+    url = "https://t.me/yurubaba"
+
 [menus]
   [[menus.main]]
     name = "Canlı Skor"
     url = "/canli/"
-    weight = 0
+    weight = -1
   [[menus.main]]
     name = "Maç Önü"
     url = "/kategoriler/mac-onu/"
