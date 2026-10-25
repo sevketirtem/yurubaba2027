@@ -1,0 +1,14 @@
+{{- /* Gol ve asist krallığı. Veri: site.Params.skorAPI → /api/krallar. js/krallar.js */ -}}
+<section class="skor krallar"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} aria-label="Süper Lig gol ve asist krallığı">
+  {{- if site.Params.skorAPI }}
+  <div class="skor-kolonlar kral-kolonlar">
+    <div><h3>Gol krallığı</h3><div class="kral-gol"><p class="empty">Yükleniyor…</p></div></div>
+    <div><h3>Asist krallığı</h3><div class="kral-asist"><p class="empty">Yükleniyor…</p></div></div>
+  </div>
+  <p class="skor-alt"></p>
+  {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/krallar.js") | resources.Concat "js/krallar-paket.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- else }}
+  <p class="empty">Gol ve asist krallığı çok yakında burada.</p>
+  {{- end }}
+</section>

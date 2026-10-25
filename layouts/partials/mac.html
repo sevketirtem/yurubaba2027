@@ -1,0 +1,11 @@
+{{- /* Maç sayfası kutusu (/mac/?id=…). Veri: site.Params.skorAPI → /api/mac. js/mac.js */ -}}
+<section class="skor macsayfa"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-canli="{{ "canli/" | relURL }}" aria-label="Maç ayrıntısı">
+  {{- if site.Params.skorAPI }}
+  <div class="mac-govde"><p class="empty">Yükleniyor…</p></div>
+  <p class="skor-alt"></p>
+  {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/mac.js") | resources.Concat "js/mac-paket.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- else }}
+  <p class="empty">Maç ayrıntıları çok yakında burada.</p>
+  {{- end }}
+</section>

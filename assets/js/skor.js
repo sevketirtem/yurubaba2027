@@ -1,39 +1,22 @@
 // Canlı skor ve puan durumu. Veri: kendi önbellekli API'miz (skor-api/, Vercel).
-// <div class="skor" data-api="https://…" data-mod="tam|ozet" data-link="/canli/">
+// <section class="skor" data-api="https://…" data-mod="tam|ozet" data-mac="/mac/">
+// Ortak yardımcılar: adlar.js (window.HY).
 (function () {
   "use strict";
-  var AD = {
-    "Fenerbahce": "Fenerbahçe", "Besiktas": "Beşiktaş", "Istanbul Basaksehir": "Başakşehir",
-    "Basaksehir": "Başakşehir", "Kasimpasa": "Kasımpaşa", "Goztepe": "Göztepe", "Eyupspor": "Eyüpspor",
-    "Rizespor": "Çaykur Rizespor", "Caykur Rizespor": "Çaykur Rizespor", "Genclerbirligi": "Gençlerbirliği",
-    "Fatih Karagumruk": "Fatih Karagümrük", "Karagumruk": "Fatih Karagümrük", "Amed SK": "Amedspor",
-    "Amed": "Amedspor", "Gaziantep": "Gaziantep FK", "Kocaelispor": "Kocaelispor", "Sivasspor": "Sivasspor",
-    "Bodrumspor": "Bodrum FK", "Hatayspor": "Hatayspor", "Pendikspor": "Pendikspor", "Corum FK": "Çorum FK",
-    "Erzurumspor": "Erzurumspor", "Bandirmaspor": "Bandırmaspor", "Manisa FK": "Manisa FK"
-  };
-  var CANLI = ["1H", "HT", "2H", "ET", "BT", "P", "LIVE", "INT", "SUSP"];
-  var BITTI = ["FT", "AET", "PEN"];
-  var DURUM = { HT: "İY", PST: "Ertelendi", CANC: "İptal", ABD: "Yarıda", SUSP: "Durdu", INT: "Ara", TBD: "Saat belli değil", AWD: "Hükmen", WO: "Hükmen", BT: "Ara", P: "Penaltılar" };
-  var TZ = "Europe/Istanbul";
+  var H = window.HY, el = H.el, ad = H.ad, CANLI = H.CANLI, BITTI = H.BITTI;
 
-  function ad(s) { return AD[s] || s; }
-  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function saat(iso) { return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: TZ }); }
-  function gun(iso) { return new Date(iso).toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long", timeZone: TZ }); }
-  function getir(url) {
-    return fetch(url, { cache: "no-cache" }).then(function (r) {
-      return r.json().then(function (j) { if (!r.ok) throw new Error(j.hata || ("HTTP " + r.status)); return j; });
-    });
-  }
-
-  function macSatiri(m) {
-    var satir = el("div", "mac");
+  function macSatiri(m, macYolu) {
+    var satir = el(macYolu ? "a" : "div", "mac");
+    if (macYolu) {
+      satir.href = macYolu + "?id=" + m.id;
+      satir.title = ad(m.ev) + " - " + ad(m.dep) + ": kadrolar, olaylar, istatistik";
+    }
     var canli = CANLI.indexOf(m.durum) >= 0, bitti = BITTI.indexOf(m.durum) >= 0;
     if (canli) satir.classList.add("canli");
     var d = el("span", "mac-durum");
     if (canli) d.textContent = m.durum === "HT" ? "İY" : (m.dakika ? m.dakika + "'" : "Canlı");
     else if (bitti) d.textContent = "MS";
-    else d.textContent = DURUM[m.durum] || saat(m.tarih);
+    else d.textContent = H.DURUM[m.durum] || H.saat(m.tarih);
     var skor = (canli || bitti) && m.evGol != null ? m.evGol + " - " + m.depGol : "-";
     satir.appendChild(d);
     satir.appendChild(el("span", "mac-ev", ad(m.ev)));
@@ -42,7 +25,7 @@
     return satir;
   }
 
-  function maclarCiz(kutu, veri, ozet) {
+  function maclarCiz(kutu, veri, ozet, macYolu) {
     var maclar = veri.maclar || [];
     if (ozet) {
       // Özet: canlılar + bugünün/yarının maçları, yoksa son biten 4 maç
@@ -56,9 +39,9 @@
     if (!maclar.length) { kutu.appendChild(el("p", "empty", "Bu hafta için maç bilgisi yok.")); return; }
     var sonGun = "";
     maclar.forEach(function (m) {
-      var g = gun(m.tarih);
+      var g = H.gun(m.tarih);
       if (g !== sonGun) { kutu.appendChild(el("div", "mac-gun", g)); sonGun = g; }
-      kutu.appendChild(macSatiri(m));
+      kutu.appendChild(macSatiri(m, macYolu));
     });
   }
 
@@ -81,20 +64,19 @@
     t.appendChild(tbody); sar.appendChild(t); kutu.appendChild(sar);
   }
 
-  function zaman(iso) { return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: TZ }); }
-
   function yukle(kok) {
     var api = kok.getAttribute("data-api").replace(/\/$/, "");
     var ozet = kok.getAttribute("data-mod") === "ozet";
+    var macYolu = kok.getAttribute("data-mac");
     var mKutu = kok.querySelector(".skor-maclar"), pKutu = kok.querySelector(".skor-puan"), alt = kok.querySelector(".skor-alt");
-    Promise.allSettled([getir(api + "/api/maclar"), getir(api + "/api/puan")]).then(function (s) {
+    Promise.allSettled([H.getir(api + "/api/maclar"), H.getir(api + "/api/puan")]).then(function (s) {
       mKutu.textContent = ""; pKutu.textContent = "";
-      if (s[0].status === "fulfilled") maclarCiz(mKutu, s[0].value, ozet);
+      if (s[0].status === "fulfilled") maclarCiz(mKutu, s[0].value, ozet, macYolu);
       else mKutu.appendChild(el("p", "empty", "Maç bilgisi şu an alınamıyor."));
       if (s[1].status === "fulfilled") puanCiz(pKutu, s[1].value, ozet);
       else pKutu.appendChild(el("p", "empty", "Puan durumu şu an alınamıyor."));
       var m = s[0].status === "fulfilled" ? s[0].value : null;
-      if (alt) alt.textContent = m ? ("Son güncelleme " + zaman(m.guncellendi) + (m.canli ? " · canlı maçlar birkaç dakikada bir yenilenir" : "")) : "";
+      if (alt) alt.textContent = m ? ("Son güncelleme " + H.saat(m.guncellendi) + (m.canli ? " · canlı maçlar birkaç dakikada bir yenilenir" : "") + (macYolu ? " · ayrıntı için maça tıkla" : "")) : "";
       if (m && m.canli) setTimeout(function () { yukle(kok); }, 120000);
     });
   }

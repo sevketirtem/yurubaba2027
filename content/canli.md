@@ -7,4 +7,4 @@ Duygu yok, rakam var. Haftanın bütün Süper Lig maçları ve puan durumu bura
 
 {{< skor >}}
 
-Veriler API-Football'dan otomatik alınır; nadiren birkaç dakika gecikebilir. Bir hata görürsen [bize yaz](/iletisim/).
+Veriler API-Football'dan otomatik alınır; nadiren birkaç dakika gecikebilir. Maça tıklayınca ilk 11'ler, goller ve istatistikler açılır. Gol yarışı için [Gol Krallığı](/krallar/). Bir hata görürsen [bize yaz](/iletisim/).

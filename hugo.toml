@@ -56,6 +56,10 @@ summaryLength = 40
     url = "/canli/"
     weight = -1
   [[menus.main]]
+    name = "Gol Krallığı"
+    url = "/krallar/"
+    weight = 1
+  [[menus.main]]
     name = "Maç Önü"
     url = "/kategoriler/mac-onu/"
     weight = 1
