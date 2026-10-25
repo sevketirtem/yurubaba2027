@@ -193,10 +193,12 @@ def main():
 
     # Tek istekli listeler
     tekler = {"puan": "/api/puan", "krallar": "/api/krallar", "sakat": "/api/sakat", "avrupa": "/api/avrupa",
-              "milli": "/api/milli", "gurbetci": "/api/gurbetci", "transferler": "/api/transferler",
-              "fikstur": "/api/fikstur", "maclar": "/api/maclar"}
-    with ThreadPoolExecutor(6) as havuz:
+              "fikstur": "/api/fikstur", "maclar": "/api/maclar", "milli": "/api/milli"}
+    with ThreadPoolExecutor(4) as havuz:
         sonuc = dict(zip(tekler, havuz.map(lambda y: getir(api, y), tekler.values())))
+    # Çok istekli olanlar (transferler ~19, gurbetçi ~28) tek tek
+    for ad, yol in (("transferler", "/api/transferler"), ("gurbetci", "/api/gurbetci")):
+        sonuc[ad] = getir(api, yol)
     for ad, veri in sonuc.items():
         if veri is not None:
             yaz(VERI / f"{ad}.json", veri)
@@ -204,8 +206,14 @@ def main():
 
     # Takım sayfaları
     tablo = (sonuc.get("puan") or {}).get("tablo") or []
-    with ThreadPoolExecutor(3) as havuz:  # API-Football'un dakika/saniye sınırına takılmamak için az paralel
-        takimlar = list(havuz.map(lambda s: (s, getir(api, f"/api/takim?id={s['id']}")), tablo))
+    # Sırayla ve aralıklı: her takım 6 API-Football isteği; Pro plan dakikada 300 istekle sınırlı.
+    # Yanıtlar 3 saat önbellekte; önbellekteyse bekleme kısa sürer.
+    takimlar = []
+    for satir in tablo:
+        bas = time.time()
+        takimlar.append((satir, getir(api, f"/api/takim?id={satir['id']}")))
+        if time.time() - bas > 1:  # gerçekten API'ye gittiyse biraz nefes al
+            time.sleep(2)
     for satir, veri in takimlar:
         if veri:
             yaz(VERI / "takim" / f"{takim_slug(satir['takim'])}.json", veri)
