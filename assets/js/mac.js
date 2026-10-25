@@ -14,7 +14,8 @@
   };
   var MEVKI = { G: "K", D: "D", M: "O", F: "F" };
 
-  function dakika(o) { return o.dk + (o.ek ? "+" + o.ek : "") + "'"; }
+  // Maç başlamadan gösterilen kartlarda API eksi dakika verir (ör. -5)
+  function dakika(o) { return o.dk == null || o.dk <= 0 ? "Önce" : o.dk + (o.ek ? "+" + o.ek : "") + "'"; }
 
   function olayMetni(o) {
     if (o.tur === "subst") return ["⇄", "Değişiklik: " + (o.oyuncu || "?") + " ↔ " + (o.yardimci || "?")];
