@@ -34,6 +34,9 @@ summaryLength = 40
   # Ziyaretçi sayacı (GoatCounter): https://yurubaba.goatcounter.com — boş bırakılırsa sayaç kapanır.
   goatcounter = "yurubaba"
 
+  # Takım sayfalarının giriş cümlesi (%s = takım adı)
+  takimGiris = "<strong>%s</strong> için duygu yok, rakam var: son 5 maç, sıradaki rakipler, puan sırası, kadro ve eksikler. %[1]s hakkında karar vereceksen önce tabloya bak."
+
   closingQuestion = "Siz ne diyorsunuz? Rakamla gelin, yorumlara yazın."
 
   # Yorumlar (Waline, kendi sunucumuz; iki site ortak).
@@ -54,11 +57,19 @@ summaryLength = 40
   [[menus.main]]
     name = "Canlı Skor"
     url = "/canli/"
-    weight = -1
+    weight = -4
+  [[menus.main]]
+    name = "Takımlar"
+    url = "/takim/"
+    weight = -3
   [[menus.main]]
     name = "Gol Krallığı"
     url = "/krallar/"
-    weight = 1
+    weight = -2
+  [[menus.main]]
+    name = "Avrupa"
+    url = "/avrupa/"
+    weight = -1
   [[menus.main]]
     name = "Maç Önü"
     url = "/kategoriler/mac-onu/"

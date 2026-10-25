@@ -1,0 +1,11 @@
+{{- /* Türk takımları Avrupa kupalarında. js/avrupa.js (adlar.js ile paketlenir) */ -}}
+<section class="skor avrupa"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-mac="{{ "mac/" | relURL }}" aria-label="Türk takımları Avrupa kupalarında">
+  {{- if site.Params.skorAPI }}
+  <div class="avrupa-govde"><p class="empty">Yükleniyor…</p></div>
+  <p class="skor-alt"></p>
+  {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/avrupa.js") | resources.Concat "js/avrupa-paket.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- else }}
+  <p class="empty">Avrupa kupası bilgileri çok yakında burada.</p>
+  {{- end }}
+</section>

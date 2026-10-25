@@ -28,7 +28,10 @@
 
   function bas(kutu, m, canli, bitti) {
     var ust = el("div", "mac-ust");
-    var bilgi = [m.hafta ? m.hafta + ". hafta" : null, H.gun(m.tarih) + " " + H.saat(m.tarih), m.stat].filter(Boolean).join(" · ");
+    // Süper Lig/1. Lig: "10. hafta"; Avrupa kupaları: lig adı + tur ("League Stage - 3")
+    var tur = m.hafta ? (/^\d+$/.test(m.hafta) ? m.hafta + ". hafta" : m.hafta) : null;
+    var lig = m.ligId && m.ligId !== 203 ? m.lig : null;
+    var bilgi = [lig, tur, H.gun(m.tarih) + " " + H.saat(m.tarih), m.stat].filter(Boolean).join(" · ");
     ust.appendChild(el("p", "mac-bilgi", bilgi));
     var skorSatir = el("div", "mac-tabela" + (canli ? " canli" : ""));
     skorSatir.appendChild(el("span", "tabela-ev", ad(m.ev)));
@@ -136,6 +139,11 @@
       olaylar(govde, m);
       istatistik(govde, m);
       kadrolar(govde, m, bitti);
+      // Süper Lig maçlarında: iki takımın sırası, formu ve son karşılaşmaları (karsilasma.js)
+      if (H.karsilasma && (!m.ligId || m.ligId === 203)) {
+        var kars = el("div"); govde.appendChild(kars);
+        H.karsilasma(kars, api, m.ev, m.dep, kok.getAttribute("data-mac") || "/mac/", m.id);
+      }
       var baslik = ad(m.ev) + " - " + ad(m.dep) + ((canli || bitti) && m.evGol != null ? " " + m.evGol + "-" + m.depGol : "");
       document.title = baslik + " · " + document.title.split(" · ").pop();
       var h1 = document.querySelector(".post-head h1");

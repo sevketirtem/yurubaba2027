@@ -1,0 +1,8 @@
+{{- /* Karşılaşma kutusu: .ev ve .dep takım adları. Yazılarda front matter: karsilasma: ["Galatasaray", "Fenerbahçe"] */ -}}
+{{- if site.Params.skorAPI }}
+<section class="skor karsilasma" data-api="{{ site.Params.skorAPI }}" data-ev="{{ .ev }}" data-dep="{{ .dep }}" data-mac="{{ "mac/" | relURL }}" aria-label="{{ .ev }} - {{ .dep }} karşılaşma öncesi">
+  <div class="kars-govde"><p class="empty">Yükleniyor…</p></div>
+  {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/karsilasma.js") | resources.Concat "js/karsilasma-paket.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+</section>
+{{- end }}

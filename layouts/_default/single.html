@@ -8,6 +8,7 @@
     <h1>{{ .Title }}</h1>
   </header>
   <div class="prose">{{ .Content }}</div>
+  {{ with .Params.karsilasma }}{{ if eq (len .) 2 }}{{ partial "karsilasma.html" (dict "ev" (index . 0) "dep" (index . 1)) }}{{ end }}{{ end }}
   {{ if eq .Section "posts" }}
     <p class="closing">{{ site.Params.closingQuestion }}</p>
     {{ with .Params.kaynaklar }}

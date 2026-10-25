@@ -152,3 +152,64 @@ a.mac:hover .mac-ev, a.mac:hover .mac-dep { text-decoration: underline; text-dec
 @media (min-width: 760px) { .kral-kolonlar { grid-template-columns: 1fr 1fr; } }
 table.kral td.kral-takim { font-size: 13px; color: var(--muted); text-align: left; white-space: nowrap; }
 table.kral th:nth-child(3) { text-align: left; }
+
+/* Puan tablosunda takım bağlantıları */
+table.puan td.takim a { text-decoration: none; }
+table.puan td.takim a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+
+/* Form rozetleri (G/B/M) — takım sayfası ve karşılaşma kutusu */
+.form { display: inline-flex; gap: 3px; }
+.form i { font-style: normal; font-size: 11px; font-weight: 800; width: 20px; height: 20px; border-radius: 4px; display: inline-grid; place-items: center; color: #fff; }
+.form-G { background: #2b9348; } .form-B { background: #8d939e; } .form-M { background: #d62828; }
+
+/* Takım sayfası (partials/takim.html, js/takim.js) */
+.takim-ozet { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
+@media (min-width: 640px) { .takim-ozet { grid-template-columns: repeat(4, 1fr) 1.6fr; } }
+.ozet-kutu { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.ozet-kutu b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.ozet-kutu span { font-size: 12px; color: var(--muted); }
+.ozet-form { grid-column: 1 / -1; }
+@media (min-width: 640px) { .ozet-form { grid-column: auto; } }
+.takim-maclar { list-style: none; margin: 0; padding: 0; }
+.takim-mac { display: grid; grid-template-columns: 92px 74px 1fr auto; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 15px; text-decoration: none; color: inherit; }
+.takim-mac:hover .tm-rakip { text-decoration: underline; text-decoration-color: var(--accent); }
+.tm-tarih, .tm-yer { font-size: 12px; color: var(--muted); }
+.tm-rakip { font-weight: 600; }
+.tm-skor { font-weight: 800; font-variant-numeric: tabular-nums; min-width: 44px; text-align: center; border-radius: 4px; padding: 1px 6px; }
+.tm-skor.sonuc-G { background: #2b9348; color: #fff; } .tm-skor.sonuc-B { background: #8d939e; color: #fff; } .tm-skor.sonuc-M { background: #d62828; color: #fff; }
+.tm-lig { grid-column: 3 / -1; font-size: 11px; color: var(--muted); margin-top: -4px; }
+@media (max-width: 480px) { .takim-mac { grid-template-columns: 70px 1fr auto; } .tm-yer { display: none; } .tm-lig { grid-column: 2 / -1; } }
+.kadro-4 { grid-template-columns: 1fr; }
+@media (min-width: 640px) { .kadro-4 { grid-template-columns: 1fr 1fr; } }
+.takim-izgara { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.takim-izgara a { display: block; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-decoration: none; font-weight: 700; }
+.takim-izgara a:hover { border-color: var(--accent); }
+
+/* Sakat ve cezalılar (js/sakatlar.js, takım sayfası) */
+.sakat-takim { margin-bottom: 14px; }
+.sakat-takim h3 { font-size: 15px; margin: 8px 0 4px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.sakat-takim h3 a { text-decoration-color: var(--accent); }
+.sakat-sayi { font-size: 12px; color: var(--muted); font-weight: 600; }
+.sakat-liste { list-style: none; margin: 0; padding: 0; }
+.sakat-liste li { display: grid; grid-template-columns: 1fr 1fr 96px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.sakat-ad { font-weight: 600; }
+.sakat-sebep { color: var(--muted); font-size: 13px; }
+.sakat-durum { justify-self: end; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.durum-yok { background: #d62828; color: #fff; } .durum-suphe { background: #e9c46a; color: #1b1d22; }
+
+/* Avrupa kupaları (js/avrupa.js) */
+.avrupa-sira { list-style: none; margin: 0 0 8px; padding: 0; }
+.avrupa-sira li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.avrupa-sira a { font-weight: 700; text-decoration-color: var(--accent); }
+.avrupa-sira span { font-size: 13px; color: var(--muted); }
+
+/* Karşılaşma kutusu (js/karsilasma.js) */
+.kars-iki { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kars-takim { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+.kars-takim h3 { margin: 0 0 4px; font-size: 16px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.kars-takim h3 a { text-decoration-color: var(--accent); }
+.kars-sira { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+.kars-baslik { margin: 14px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.kars-mac { grid-template-columns: 110px 1fr auto; }
+.kars-mac .tm-lig { grid-column: auto; margin: 0; }
+.karsilasma { margin-top: 20px; }

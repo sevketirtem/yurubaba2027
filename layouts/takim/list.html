@@ -1,0 +1,11 @@
+{{ define "main" }}
+<article class="post">
+  <header class="post-head"><h1>{{ .Title }}</h1></header>
+  <div class="prose">
+    {{ .Content }}
+    <ul class="takim-izgara">
+      {{ range .Pages.ByLinkTitle }}<li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>{{ end }}
+    </ul>
+  </div>
+</article>
+{{ end }}

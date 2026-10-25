@@ -45,7 +45,7 @@
     });
   }
 
-  function puanCiz(kutu, veri, ozet) {
+  function puanCiz(kutu, veri, ozet, linkli) {
     var tablo = veri.tablo || [];
     if (!tablo.length) { kutu.appendChild(el("p", "empty", "Puan durumu henüz yok.")); return; }
     if (ozet) tablo = tablo.slice(0, 5);
@@ -58,7 +58,12 @@
     tablo.forEach(function (s) {
       var r = el("tr");
       var hucre = ozet ? [s.sira, ad(s.takim), s.o, s.av, s.p] : [s.sira, ad(s.takim), s.o, s.g, s.b, s.m, s.a, s.y, s.av, s.p];
-      hucre.forEach(function (v, i) { r.appendChild(el("td", i === 1 ? "takim" : (i === hucre.length - 1 ? "p" : null), v)); });
+      hucre.forEach(function (v, i) {
+        if (i === 1 && linkli) {
+          var td = el("td", "takim"); td.appendChild(H.takimLink(s.takim)); r.appendChild(td); return;
+        }
+        r.appendChild(el("td", i === 1 ? "takim" : (i === hucre.length - 1 ? "p" : null), v));
+      });
       tbody.appendChild(r);
     });
     t.appendChild(tbody); sar.appendChild(t); kutu.appendChild(sar);
@@ -68,12 +73,14 @@
     var api = kok.getAttribute("data-api").replace(/\/$/, "");
     var ozet = kok.getAttribute("data-mod") === "ozet";
     var macYolu = kok.getAttribute("data-mac");
+    var lig = kok.getAttribute("data-lig");
+    var q = lig ? "?lig=" + encodeURIComponent(lig) : "";
     var mKutu = kok.querySelector(".skor-maclar"), pKutu = kok.querySelector(".skor-puan"), alt = kok.querySelector(".skor-alt");
-    Promise.allSettled([H.getir(api + "/api/maclar"), H.getir(api + "/api/puan")]).then(function (s) {
+    Promise.allSettled([H.getir(api + "/api/maclar" + q), H.getir(api + "/api/puan" + q)]).then(function (s) {
       mKutu.textContent = ""; pKutu.textContent = "";
       if (s[0].status === "fulfilled") maclarCiz(mKutu, s[0].value, ozet, macYolu);
       else mKutu.appendChild(el("p", "empty", "Maç bilgisi şu an alınamıyor."));
-      if (s[1].status === "fulfilled") puanCiz(pKutu, s[1].value, ozet);
+      if (s[1].status === "fulfilled") puanCiz(pKutu, s[1].value, ozet, !lig || lig === "203");
       else pKutu.appendChild(el("p", "empty", "Puan durumu şu an alınamıyor."));
       var m = s[0].status === "fulfilled" ? s[0].value : null;
       if (alt) alt.textContent = m ? ("Son güncelleme " + H.saat(m.guncellendi) + (m.canli ? " · canlı maçlar birkaç dakikada bir yenilenir" : "") + (macYolu ? " · ayrıntı için maça tıkla" : "")) : "";

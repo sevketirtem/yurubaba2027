@@ -1,0 +1,11 @@
+{{- /* Takım sayfası kutusu. .ad = API'deki takım adı. js/takim.js */ -}}
+<section class="skor takimsayfa"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-ad="{{ .ad }}" data-mac="{{ "mac/" | relURL }}" aria-label="{{ .ad }} takım bilgileri">
+  {{- if site.Params.skorAPI }}
+  <div class="takim-govde"><p class="empty">Yükleniyor…</p></div>
+  <p class="skor-alt genel"></p>
+  {{- $js := slice (resources.Get "js/adlar.js") (resources.Get "js/takim.js") | resources.Concat "js/takim-paket.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- else }}
+  <p class="empty">Takım bilgileri çok yakında burada.</p>
+  {{- end }}
+</section>
