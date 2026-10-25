@@ -1,0 +1,62 @@
+# Yazı olmayan özel duyuruları paylaşır (scripts/ozel_paylasim.py).
+# Şu anki ayar: 26 Ekim 2026 Galatasaray–Fenerbahçe derbisi, "Maç Merkezi" bağlantısı.
+#   - Zamanlanmış çalışma (cron, yedek): 26 Ekim 13:07 UTC başlar, hedef saate kadar bekler.
+#   - Claude ayrıca hedef saatten hemen önce elle (dispatch) tetikler.
+#   İki tetikleme çift gönderi yapmaz: adres Bluesky'da zaten paylaşılmışsa hiçbir yere gitmez.
+# Derbiden sonra: cron satırı silinir ya da yeni duyuru için env değerleri değiştirilir.
+name: Özel duyuru paylaş
+
+on:
+  schedule:
+    - cron: "11 13 26 10 *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Deneme: paylaşmadan ne yapacağını göster"
+        type: boolean
+        default: true
+      hedef_zaman:
+        description: "Bu ana kadar bekle (ISO, boş = env'deki)"
+        type: string
+        default: ""
+      platformlar:
+        description: "Yalnızca bunlar (ör. bluesky,telegram; boş = hepsi)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ozel-paylasim
+  cancel-in-progress: false
+
+jobs:
+  paylas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Duyuruyu paylaş
+        env:
+          SITE: https://yurubaba.com
+          SKOR_API: https://superlig-veri-ten.vercel.app
+          MAC: "Galatasaray-Fenerbahce"
+          BASLIK: "Galatasaray - Fenerbahçe | Maç Merkezi"
+          HEDEF_ZAMAN: ${{ github.event_name == 'workflow_dispatch' && inputs.hedef_zaman != '' && inputs.hedef_zaman || '2026-10-26T20:38:00+03:00' }}
+          ILK11_BEKLE: "20"
+          SON_DAKIKA: "20"
+          METIN_ILK11: "Derbi diye kalbimiz hızlanmadı. Galatasaray–Fenerbahçe ilk 11'leri açıklandı; kadrolar, olaylar ve istatistikler Maç Merkezi'nde. Tabelaya değil isabetli şuta bakın. Görürüz."
+          METIN_ONCE: "Derbi diye kalbimiz hızlanmadı. Galatasaray–Fenerbahçe ilk 11'leri açıklanınca Maç Merkezi'nde; olaylar ve istatistikler de orada. Tabelaya değil isabetli şuta bakın. Görürüz."
+          ETIKETLER: "#futbol #derbi"
+          IG_ETIKETLER: "#futbol #derbi #süperlig #galatasaray #fenerbahçe"
+          PLATFORMLAR: ${{ github.event_name == 'workflow_dispatch' && inputs.platformlar || '' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_SAYFA_ADI: "Yürü Baba"
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+        run: python3 scripts/ozel_paylasim.py
