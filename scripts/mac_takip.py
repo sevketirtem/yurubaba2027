@@ -48,6 +48,24 @@ SESLER = {
 }
 
 
+def derleme_tetikle(neden):
+    """Siteyi yeniden derlet (maç sayfasının HTML'i ve canlı anlatım verisi tazelensin)."""
+    token, depo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    if not token or not depo or ortam("DRY_RUN").lower() == "true":
+        return False
+    import urllib.request
+    req = urllib.request.Request(f"https://api.github.com/repos/{depo}/actions/workflows/hugo.yml/dispatches",
+                                 data=json.dumps({"ref": "main"}).encode(), method="POST",
+                                 headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+    try:
+        urllib.request.urlopen(req, timeout=30)
+        print(f"Site yeniden derleniyor ({neden})")
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning::Derleme tetiklenemedi: {e}")
+        return False
+
+
 def ad(s):
     return AD.get(s, s)
 
@@ -123,6 +141,7 @@ def main():
     en_gec = datetime.fromisoformat(ortam("EN_GEC")) if ortam("EN_GEC") else None
     yoklama, onay = float(ortam("YOKLAMA_SN", "75")), float(ortam("ONAY_SN", "120"))
     ilk_gorulme = {}
+    son_derleme = 0.0
     print(f"İzleniyor: {adres}")
 
     while True:
@@ -154,11 +173,18 @@ def main():
                                      e=d.get("evGol", 0), d=d.get("depGol", 0))
                 # Anahtar metnin içinde geçsin ki Bluesky'dan çift kontrolü yapılabilsin
                 p.paylas(anahtar, metin)
+                if time.time() - son_derleme > 180 and derleme_tetikle("gol"):
+                    son_derleme = time.time()
             if d.get("durum") in BITTI:
                 metin = ses["ms"].format(ev=ad(d["ev"]), dep=ad(d["dep"]), e=d.get("evGol", 0), d=d.get("depGol", 0))
                 p.paylas(metin.split(".")[0], metin)
+                derleme_tetikle("maç sonu")
                 print("Maç bitti, takip sona erdi.")
                 return
+        # Maç sürerken 15 dakikada bir de derle (kartlar, değişiklikler, istatistikler)
+        if d and d.get("durum") in {"1H", "HT", "2H", "ET", "BT", "P"} and time.time() - son_derleme > 900:
+            if derleme_tetikle("canlı güncelleme"):
+                son_derleme = time.time()
         if dry_run:
             print(f"DRY_RUN: durum {d.get('durum') if d else '?'}, {len(ilk_gorulme)} gol görüldü; tek yoklamada duruldu.")
             return

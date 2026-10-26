@@ -10,15 +10,7 @@
   <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
   <meta property="og:url" content="{{ .Permalink }}">
   <link rel="canonical" href="{{ .Permalink }}">
-  {{- if and .IsPage (eq .Section "posts") }}
-  {{- $kart := partial "kart.html" . }}
-  <meta property="og:image" content="{{ $kart.genis.Permalink }}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="{{ .Title }}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="hadiyuru:kare" content="{{ $kart.kare.Permalink }}">
-  {{- end }}
+  {{- partial "seo.html" . }}
   {{ with .OutputFormats.Get "rss" }}<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ site.Title }}">{{ end }}
   <style>:root{--accent:{{ site.Params.accent | safeCSS }};--accent-ink:{{ site.Params.accentInk | safeCSS }}}</style>
   {{ $css := resources.Get "css/main.css" | minify | fingerprint }}

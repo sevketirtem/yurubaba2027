@@ -153,9 +153,17 @@ def mac_sayfalari(fikstur):
         aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
         tarih_metni = f"{int(g)} {aylar[int(ay) - 1]} {yil}"
         hafta = m.get("hafta") or "?"
-        baslik = f"{ev} - {dep} maçı: ilk 11'ler, skor ve istatistikler ({tarih_metni})"
-        aciklama = (f"Süper Lig {hafta}. hafta: {ev} - {dep} maçının ilk 11'leri, golleri, kartları, "
-                    "istatistikleri ve son karşılaşmaları.")
+        saat = m["tarih"][11:16]
+        bitti = m.get("durum") in ("FT", "AET", "PEN") and m.get("evGol") is not None
+        # Başlıklar insanların aradığı biçimde: maçtan önce "ne zaman, saat kaçta", sonra skor
+        if bitti:
+            baslik = f"{ev} {m['evGol']}-{m['depGol']} {dep}: maç sonucu, goller ve istatistikler ({tarih_metni})"
+            aciklama = (f"{ev} - {dep} maçı {m['evGol']}-{m['depGol']} bitti. Süper Lig {hafta}. hafta: goller, kartlar, "
+                        "ilk 11'ler, istatistikler ve iki takımın puan durumu.")
+        else:
+            baslik = f"{ev} - {dep} maçı ne zaman, saat kaçta? İlk 11'ler ve canlı skor ({tarih_metni})"
+            aciklama = (f"Süper Lig {hafta}. hafta: {ev} - {dep} maçı {tarih_metni}, saat {saat} (TSİ). "
+                        "İlk 11'ler, canlı skor, goller, istatistikler ve son karşılaşmalar.")
         satirlar = [
             "---",
             f"title: {tirnak(baslik)}",

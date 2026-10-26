@@ -1,0 +1,69 @@
+{{- /*
+  Arama motorları ve sosyal medya için <head> etiketleri + yapısal veri (schema.org JSON-LD).
+  - Google Discover: büyük görsel izni (max-image-preview:large) ve 1200x630 kart görseli
+  - Yazılar: NewsArticle; takım sayfaları: SportsTeam; maç sayfası kendi SportsEvent/LiveBlogPosting'ini ekler
+  - Her sayfa: BreadcrumbList; ana sayfa: WebSite + Organization (sosyal hesaplar sameAs)
+*/ -}}
+{{- $logo := "logo.png" | absURL -}}
+{{- $site := dict "@type" "Organization" "name" site.Title "url" site.BaseURL "logo" (dict "@type" "ImageObject" "url" $logo "width" 512 "height" 512) -}}
+<meta name="robots" content="{{ .Params.robots | default "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" }}">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary | plainify | truncate 160 }}{{ else }}{{ site.Params.description }}{{ end }}{{ end }}">
+<meta name="theme-color" content="{{ site.Params.accent }}">
+<link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="48x48">
+<link rel="icon" href="{{ "icon-192.png" | relURL }}" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
+{{- /* Paylaşım kartı: yazılar, maç ve takım sayfaları için başlıklı kart; diğerlerinde logo */ -}}
+{{- $kartli := and .IsPage (in (slice "posts" "maclar" "takim") .Section) -}}
+{{- $gorsel := $logo }}{{ $kart := dict -}}
+{{- if $kartli }}
+  {{- $kart = partial "kart.html" . }}{{ $gorsel = $kart.genis.Permalink }}
+<meta property="og:image" content="{{ $kart.genis.Permalink }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ .LinkTitle }}">
+<meta name="hadiyuru:kare" content="{{ $kart.kare.Permalink }}">
+{{- else }}
+<meta property="og:image" content="{{ $logo }}">
+{{- end }}
+<meta name="twitter:card" content="{{ if $kartli }}summary_large_image{{ else }}summary{{ end }}">
+<meta name="twitter:title" content="{{ .Title }}">
+{{- if and .IsPage (eq .Section "posts") }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}">
+{{- range .GetTerms "kategoriler" }}<meta property="article:section" content="{{ .LinkTitle }}">{{ end }}
+{{- end }}
+
+{{- /* Yapısal veri */ -}}
+{{- $ld := slice -}}
+{{- if .IsHome }}
+  {{- $sameAs := slice }}{{ range site.Params.sosyal }}{{ $sameAs = $sameAs | append .url }}{{ end }}
+  {{- $ld = $ld | append (dict "@context" "https://schema.org" "@type" "WebSite" "name" site.Title "alternateName" (replaceRE `^https?://([^/]+)/?.*$` "$1" site.BaseURL) "url" site.BaseURL "inLanguage" "tr-TR" "description" site.Params.description "publisher" $site) }}
+  {{- $ld = $ld | append (merge $site (dict "@context" "https://schema.org" "sameAs" $sameAs "slogan" site.Params.slogan)) }}
+{{- else }}
+  {{- /* İçerik yolu: Ana sayfa > bölüm > sayfa */ -}}
+  {{- $yol := slice (dict "@type" "ListItem" "position" 1 "name" site.Title "item" site.BaseURL) }}
+  {{- $bolumler := dict "posts" "Yazılar" "maclar" "Maçlar" "takim" "Takımlar" }}
+  {{- if and .IsPage (ne .Section "") (index $bolumler .Section) }}
+    {{- with site.GetPage (printf "/%s" .Section) }}{{ $yol = $yol | append (dict "@type" "ListItem" "position" 2 "name" (index $bolumler $.Section) "item" .Permalink) }}{{ end }}
+  {{- end }}
+  {{- $yol = $yol | append (dict "@type" "ListItem" "position" (add (len $yol) 1) "name" .LinkTitle "item" .Permalink) }}
+  {{- $ld = $ld | append (dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $yol) }}
+{{- end }}
+{{- if and .IsPage (eq .Section "posts") }}
+  {{- $kategori := "" }}{{ range first 1 (.GetTerms "kategoriler") }}{{ $kategori = .LinkTitle }}{{ end }}
+  {{- $ld = $ld | append (dict "@context" "https://schema.org" "@type" "NewsArticle" "headline" (.Title | truncate 110) "description" (.Description | default (.Summary | plainify | truncate 160)) "image" (slice $kart.genis.Permalink $kart.kare.Permalink) "datePublished" (.Date.Format "2006-01-02T15:04:05-07:00") "dateModified" (.Lastmod.Format "2006-01-02T15:04:05-07:00") "author" (dict "@type" "Person" "name" site.Title "url" ("hakkinda/" | absURL)) "publisher" $site "mainEntityOfPage" .Permalink "articleSection" $kategori "inLanguage" "tr-TR" "wordCount" .WordCount) }}
+{{- end }}
+{{- if and .IsPage (eq .Section "takim") }}
+  {{- $t := index (site.Data.veri.takim | default dict) .File.ContentBaseName }}
+  {{- $takim := dict "@context" "https://schema.org" "@type" "SportsTeam" "name" .LinkTitle "sport" "Futbol" "url" .Permalink "memberOf" (dict "@type" "SportsOrganization" "name" "Süper Lig") }}
+  {{- with $t }}{{ with .stat }}{{ if .ad }}{{ $takim = merge $takim (dict "location" (dict "@type" "Place" "name" .ad "address" (dict "@type" "PostalAddress" "addressLocality" (.sehir | default "") "addressCountry" "TR"))) }}{{ end }}{{ end }}
+    {{- with .takim.kurulus }}{{ $takim = merge $takim (dict "foundingDate" (string .)) }}{{ end }}
+    {{- $oyuncular := slice }}{{ range first 40 (.kadro | default slice) }}{{ $oyuncular = $oyuncular | append (dict "@type" "Person" "name" .ad) }}{{ end }}
+    {{- with $oyuncular }}{{ $takim = merge $takim (dict "athlete" .) }}{{ end }}
+  {{- end }}
+  {{- $ld = $ld | append $takim }}
+{{- end }}
+{{- range $ld }}
+<script type="application/ld+json">{{ . | jsonify | safeJS }}</script>
+{{- end }}

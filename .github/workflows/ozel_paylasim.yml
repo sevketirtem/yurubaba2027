@@ -69,6 +69,9 @@ jobs:
     needs: paylas
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write   # gol ve maç sonunda siteyi yeniden derletmek için
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
@@ -77,6 +80,7 @@ jobs:
           SITE: https://yurubaba.com
           SKOR_API: https://superlig-veri-ten.vercel.app
           MAC: "Galatasaray-Fenerbahce"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SES: "yuru"
           BASLIK: "Galatasaray - Fenerbahçe | Maç Merkezi"
           ETIKETLER: "#SüperLig #derbi"

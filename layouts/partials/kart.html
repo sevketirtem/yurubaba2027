@@ -5,9 +5,13 @@
   Zemin görselleri assets/kart/ altında; yazı tipi Archivo Black (SIL OFL).
 */ -}}
 {{- $font := resources.Get "kart/ArchivoBlack.ttf" -}}
-{{- $baslik := .Title -}}
+{{- /* Yazılarda başlık ve kategori; maç/takım sayfalarında kısa ad ve bölüm etiketi */ -}}
+{{- $baslik := cond (eq .Section "posts") .Title .LinkTitle -}}
 {{- $etiket := "" -}}
 {{- with .GetTerms "kategoriler" }}{{ $etiket = (index . 0).LinkTitle }}{{ end -}}
+{{- if eq .Section "maclar" }}{{ with .Params.hafta }}{{ $etiket = printf "SÜPER LİG · %s. HAFTA" . }}{{ end }}{{ with .Params.tarih }}{{ $baslik = printf "%s\n%s" $baslik (partial "trtarih.html" (dict "t" . "bicim" "gun")) }}{{ end }}{{ end -}}
+{{- if eq .Section "takim" }}{{ $etiket = "SÜPER LİG TAKIMI" }}{{ $baslik = printf "%s\nfikstür · kadro · puan durumu" .LinkTitle }}{{ end -}}
+{{- if and (not $etiket) (not .IsHome) (ne .Section "posts") }}{{ $etiket = upper site.Title }}{{ end -}}
 {{- $alan := replaceRE `^https?://([^/]+)/?.*$` "$1" site.BaseURL -}}
 {{- $vurgu := site.Params.accent -}}
 {{- $etiketRenk := site.Params.kartEtiket | default "#ffffff" -}}

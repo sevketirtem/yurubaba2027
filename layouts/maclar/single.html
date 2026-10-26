@@ -15,6 +15,41 @@
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
     {{- end }}
   </section>
+  {{- /* Veriden üretilen maç önü/sonu özeti ve sık sorulan sorular (her maç için özgün metin) */ -}}
+  {{- $tablo := site.Data.veri.puan.tablo | default slice }}
+  {{- $ev := "" }}{{ range first 1 (where $tablo "takimSlug" $p.evSlug) }}{{ $ev = . }}{{ end }}
+  {{- $dep := "" }}{{ range first 1 (where $tablo "takimSlug" $p.depSlug) }}{{ $dep = . }}{{ end }}
+  {{- $evAd := $p.ev | partial "trad.html" }}{{ $depAd := $p.dep | partial "trad.html" }}
+  {{- $durum := $p.durum }}{{ with $d }}{{ $durum = .durum | default $durum }}{{ end }}
+  {{- $evGol := $p.evGol }}{{ $depGol := $p.depGol }}{{ with $d }}{{ $evGol = .evGol }}{{ $depGol = .depGol }}{{ end }}
+  {{- $bitti := and (in (slice "FT" "AET" "PEN") $durum) (ne $evGol nil) }}
+  {{- $saat := partial "trtarih.html" (dict "t" $p.tarih "bicim" "saat") }}
+  {{- $gun := partial "trtarih.html" (dict "t" $p.tarih "bicim" "gunadi") }}
+  {{- $yil := partial "trtarih.html" (dict "t" $p.tarih "bicim" "tam") }}
+  <div class="prose mac-ozet">
+    <h2>{{ if $bitti }}Maç sonucu{{ else }}Maç önü{{ end }}</h2>
+    <p>
+    {{- if $bitti }}{{ $evAd }} ile {{ $depAd }} arasındaki Süper Lig {{ $p.hafta }}. hafta maçı <strong>{{ $evGol }}-{{ $depGol }}</strong> sona erdi{{ if gt $evGol $depGol }}; kazanan ev sahibi {{ $evAd }} oldu{{ else if lt $evGol $depGol }}; kazanan deplasmandaki {{ $depAd }} oldu{{ else }}; puanlar paylaşıldı{{ end }}. {{ end -}}
+    {{- if and $ev $dep }}
+      {{- $evG := len (findRE "W" $ev.form) }}{{ $depG := len (findRE "W" $dep.form) }}
+      {{ if $bitti }}Puan durumunda{{ else }}Maç öncesi puan durumunda{{ end }} {{ $evAd }} {{ $ev.p }} puanla {{ $ev.sira }}. sırada, {{ $depAd }} {{ $dep.p }} puanla {{ $dep.sira }}. sırada.
+      Son beş maçta {{ $evAd }} {{ $evG }}, {{ $depAd }} {{ $depG }} galibiyet aldı.
+      {{- if ne $ev.sira $dep.sira }} İki takım arasında {{ math.Abs (sub $ev.p $dep.p) }} puan fark var.{{ end }}
+      {{- if lt $ev.a $dep.a }} Hücumda {{ $depAd }} daha üretken: {{ $dep.a }} gol, {{ $evAd }} ise {{ $ev.a }} gol attı.{{ else if gt $ev.a $dep.a }} Hücumda {{ $evAd }} daha üretken: {{ $ev.a }} gol, {{ $depAd }} ise {{ $dep.a }} gol attı.{{ end }}
+      {{- if lt $ev.y $dep.y }} Savunmada {{ $evAd }} öne çıkıyor ({{ $ev.y }} gol yedi).{{ else if gt $ev.y $dep.y }} Savunmada {{ $depAd }} öne çıkıyor ({{ $dep.y }} gol yedi).{{ end }}
+    {{- end }}
+    </p>
+    <h3>{{ $evAd }} - {{ $depAd }} maçı ne zaman, saat kaçta?</h3>
+    <p>Maç {{ $gun }} günü (<time datetime="{{ $p.tarih }}">{{ $yil }}</time>) oynan{{ if $bitti }}dı{{ else }}acak{{ end }}. Başlama saati: <strong>{{ $saat }}</strong> (Türkiye saati).{{ with $p.stat }} Stat: {{ . }}{{ with $p.sehir }}, {{ . }}{{ end }}.{{ end }}{{ with $p.hakem }} Hakem: {{ . }}.{{ end }}</p>
+    {{- if $bitti }}
+    <h3>{{ $evAd }} - {{ $depAd }} maçı kaç kaç bitti?</h3>
+    <p>Maç {{ $evGol }}-{{ $depGol }} bitti.{{ with $d }}{{ with .iy }}{{ if ne .home nil }} İlk yarı {{ .home }}-{{ .away }} sona ermişti.{{ end }}{{ end }}{{ end }}{{ with $d }}{{ $goller := where (where .olaylar "tur" "Goal") "detay" "!=" "Missed Penalty" }}{{ with $goller }} Goller: {{ range $i, $g := . }}{{ if $i }}, {{ end }}{{ $g.oyuncu }} {{ $g.dk }}{{ with $g.ek }}+{{ . }}{{ end }}'{{ if eq $g.detay "Penalty" }} (penaltı){{ else if eq $g.detay "Own Goal" }} (kendi kalesine){{ end }}{{ end }}.{{ end }}{{ end }}</p>
+    {{- end }}
+    {{- with $d }}{{ with .kadro }}{{ with .ev }}
+    <h3>{{ $evAd }} - {{ $depAd }} maçının ilk 11'leri</h3>
+    <p><strong>{{ $evAd }}</strong>{{ with .dizilis }} ({{ . }}){{ end }}: {{ delimit (apply .ilk11 "index" "." "ad") ", " }}.{{ with index $d.kadro "dep" }} <strong>{{ $depAd }}</strong>{{ with .dizilis }} ({{ . }}){{ end }}: {{ delimit (apply .ilk11 "index" "." "ad") ", " }}.{{ end }}</p>
+    {{- end }}{{ end }}{{ end }}
+  </div>
   <div class="prose">
     <p>İki takımın bütün bilgileri: <a href="{{ printf "takim/%s/" $p.evSlug | relURL }}">{{ $p.ev | partial "trad.html" }}</a> ve <a href="{{ printf "takim/%s/" $p.depSlug | relURL }}">{{ $p.dep | partial "trad.html" }}</a>. Haftanın bütün maçları ve puan durumu için <a href="{{ "canli/" | relURL }}">Canlı Skor</a>, sezonun bütün maçları için <a href="{{ "maclar/" | relURL }}">Maçlar</a>.</p>
     <p class="skor-alt">Veriler API-Football'dan alınır; maç oynanırken sayfa kendiliğinden yenilenir.</p>
@@ -23,5 +58,18 @@
   {{- $durumlar := dict "PST" "EventPostponed" "CANC" "EventCancelled" -}}
   {{- $ld := dict "@context" "https://schema.org" "@type" "SportsEvent" "name" .LinkTitle "description" .Description "url" .Permalink "startDate" $p.tarih "sport" "Futbol" "eventStatus" (printf "https://schema.org/%s" (index $durumlar $p.durum | default "EventScheduled")) "eventAttendanceMode" "https://schema.org/OfflineEventAttendanceMode" "homeTeam" (dict "@type" "SportsTeam" "name" ($p.ev | partial "trad.html")) "awayTeam" (dict "@type" "SportsTeam" "name" ($p.dep | partial "trad.html")) "location" (dict "@type" "Place" "name" ($p.stat | default "Stat") "address" (dict "@type" "PostalAddress" "addressLocality" ($p.sehir | default "") "addressCountry" "TR")) "organizer" (dict "@type" "SportsOrganization" "name" "Süper Lig") -}}
   <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+  {{- /* Canlı anlatım (LiveBlogPosting): maç olayları varsa her olay bir güncelleme; Google'da "CANLI" etiketi için */ -}}
+  {{- with $d }}{{ with .olaylar }}
+    {{- $bas := time.AsTime $p.tarih }}
+    {{- $guncellemeler := slice }}
+    {{- range . }}
+      {{- $dk := cond (and .dk (gt .dk 0)) .dk 0 }}{{ $dk = add $dk (cond (gt $dk 45) 15 0) }}
+      {{- $an := $bas.Add (time.ParseDuration (printf "%dm" (int $dk))) }}
+      {{- $baslik := printf "%v' %s %s" .dk (index (dict "Goal" "Gol:" "Card" "Kart:" "subst" "Değişiklik:" "Var" "VAR:") .tur | default "") (.oyuncu | default "") }}
+      {{- $guncellemeler = $guncellemeler | append (dict "@type" "BlogPosting" "headline" $baslik "datePublished" ($an.Format "2006-01-02T15:04:05-07:00") "articleBody" $baslik) }}
+    {{- end }}
+    {{- $live := dict "@context" "https://schema.org" "@type" "LiveBlogPosting" "headline" (printf "%s - %s canlı anlatım" ($p.ev | partial "trad.html") ($p.dep | partial "trad.html")) "url" $.Permalink "datePublished" ($bas.Format "2006-01-02T15:04:05-07:00") "coverageStartTime" ($bas.Format "2006-01-02T15:04:05-07:00") "coverageEndTime" (($bas.Add (time.ParseDuration "2h30m")).Format "2006-01-02T15:04:05-07:00") "about" (dict "@type" "SportsEvent" "name" $.LinkTitle "startDate" $p.tarih) "author" (dict "@type" "Person" "name" site.Title) "publisher" (dict "@type" "Organization" "name" site.Title "logo" (dict "@type" "ImageObject" "url" ("logo.png" | absURL))) "liveBlogUpdate" (sort $guncellemeler "datePublished" "desc") }}
+  <script type="application/ld+json">{{ $live | jsonify | safeJS }}</script>
+  {{- end }}{{ end }}
 </article>
 {{ end }}

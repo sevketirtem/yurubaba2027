@@ -1,5 +1,8 @@
 ---
 title: "Maç Merkezi"
+robots: "noindex, follow"
+sitemap:
+  disable: true
 description: "Süper Lig maçının ilk 11'leri, golleri, kartları ve istatistikleri."
 ---
 
