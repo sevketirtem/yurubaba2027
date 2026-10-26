@@ -9,6 +9,9 @@ Bize yazmak istiyorsan yaz. Rakamla gelirsen daha hızlı cevap alırsın.
 Her yazının altında yorum kutusu var. Üyelik yok, takma ad yeterli. İtiraz serbest, hakaret ve tehdit değil.
 
 ## Sosyal medyadan mesaj at
+- **Instagram:** [@yurubabacom](https://www.instagram.com/yurubabacom/)
+- **Threads:** [@yurubabacom](https://www.threads.com/@yurubabacom)
+- **Facebook:** [Yürü Baba](https://www.facebook.com/1450136994839927)
 - **Bluesky:** [@yurubaba.bsky.social](https://bsky.app/profile/yurubaba.bsky.social)
 - **Telegram kanalı:** [t.me/yurubaba](https://t.me/yurubaba)
 

@@ -54,6 +54,15 @@ summaryLength = 40
 
   # Sosyal medya (başlıkta her sayfada görünür; partials/header.html)
   [[params.sosyal]]
+    ad = "Instagram"
+    url = "https://www.instagram.com/yurubabacom/"
+  [[params.sosyal]]
+    ad = "Threads"
+    url = "https://www.threads.com/@yurubabacom"
+  [[params.sosyal]]
+    ad = "Facebook"
+    url = "https://www.facebook.com/1450136994839927"
+  [[params.sosyal]]
     ad = "Bluesky"
     url = "https://bsky.app/profile/yurubaba.bsky.social"
   [[params.sosyal]]
