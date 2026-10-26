@@ -6,6 +6,7 @@
 */ -}}
 {{- $logo := "logo.png" | absURL -}}
 {{- $site := dict "@type" "Organization" "name" site.Title "url" site.BaseURL "logo" (dict "@type" "ImageObject" "url" $logo "width" 512 "height" 512) -}}
+{{- with site.Params.yandexDogrulama }}<meta name="yandex-verification" content="{{ . }}">{{ end }}
 <meta name="robots" content="{{ .Params.robots | default "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" }}">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary | plainify | truncate 160 }}{{ else }}{{ site.Params.description }}{{ end }}{{ end }}">
