@@ -1,6 +1,6 @@
 # Yazı olmayan özel duyuruları paylaşır (scripts/ozel_paylasim.py).
 # Şu anki ayar: 26 Ekim 2026 Galatasaray–Fenerbahçe derbisi, "Maç Merkezi" bağlantısı.
-#   - Zamanlanmış çalışma (cron, yedek): 26 Ekim 13:07 UTC başlar, hedef saate kadar bekler.
+#   - Zamanlanmış çalışma yok (26 Ekim 2026 cron'u hiç başlamadı; yalnızca elle/dispatch tetikle).
 #   - Claude ayrıca hedef saatten hemen önce elle (dispatch) tetikler.
 #   İki tetikleme çift gönderi yapmaz: adres Bluesky'da zaten paylaşılmışsa hiçbir yere gitmez.
 # İkinci iş (takip): maç boyunca her golü ve maç sonucunu paylaşır (scripts/mac_takip.py).
@@ -8,8 +8,6 @@
 name: Özel duyuru paylaş
 
 on:
-  schedule:
-    - cron: "11 13 26 10 *"
   workflow_dispatch:
     inputs:
       dry_run:

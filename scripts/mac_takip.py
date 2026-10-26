@@ -97,6 +97,17 @@ class Paylasici:
             return True
         return bool(self.handle) and any(anahtar in t for t in bsky_ek.son_metinler(self.handle))
 
+    def bsky_gonder(self, tam):
+        """Bluesky oturum anahtarı ~2 saatte doluyor; ExpiredToken gelirse yeniden giriş yapıp bir kez daha dener."""
+        for deneme in range(2):
+            did, token, pds = self.bsky
+            try:
+                return bsky_ek.gonder(pds, did, token, tam, link=self.adres, link_baslik=self.baslik)
+            except Exception as e:  # noqa: BLE001
+                if deneme or "ExpiredToken" not in str(e):
+                    raise
+                self.bsky = bp.oturum_ac(self.handle, ortam("BLUESKY_APP_PASSWORD"))
+
     def paylas(self, anahtar, metin):
         if self.daha_once(anahtar):
             print(f"Atlandı (zaten gönderilmiş): {anahtar}")
@@ -109,8 +120,7 @@ class Paylasici:
             return
         isler = []
         if self.bsky and self.istendi("bluesky"):
-            did, token, pds = self.bsky
-            isler.append(("Bluesky", lambda: bsky_ek.gonder(pds, did, token, tam, link=self.adres, link_baslik=self.baslik)))
+            isler.append(("Bluesky", lambda: self.bsky_gonder(tam)))
         if all(self.tg) and self.istendi("telegram"):
             govde = f"<b>{html.escape(metin, quote=False)}</b>\n\n👉 <a href=\"{html.escape(self.adres, quote=True)}\">{html.escape(self.baslik, quote=False)}</a>"
             isler.append(("Telegram", lambda: bp.telegram_api(self.tg[0], "sendMessage", {
