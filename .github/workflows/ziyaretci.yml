@@ -1,0 +1,26 @@
+# Dünün ziyaretçi özetini GoatCounter'dan okur (toplam + en çok okunan 5 sayfa).
+# Sonuç Actions özetinde ve notice olarak görünür; sabah görevi dispatch edip annotations'tan okur.
+# Gerekli secret: GOATCOUNTER_TOKEN (GoatCounter → API → yalnızca "Read statistics").
+name: Ziyaretçi raporu
+
+on:
+  workflow_dispatch:
+    inputs:
+      gun:
+        description: "Gün (YYYY-AA-GG, İstanbul). Boş = dün"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  rapor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: GoatCounter'dan oku
+        env:
+          GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+          GUN: ${{ inputs.gun }}
+        run: python3 scripts/ziyaretci.py
