@@ -1,5 +1,7 @@
 # Meta anahtarlarını kontrol eder ve Threads anahtarını (60 gün) yeniler.
 # Ayın 1'inde ve 15'inde çalışır; elle de çalıştırılabilir.
+# GitHub'ın zamanlayıcısı güvenilmez olduğu için ayrıca her "Siteyi yayınla"dan sonra
+# bakar: son 10 gün içinde başarılı bir yenileme varsa hiçbir şey yapmadan çıkar.
 # Yeni Threads anahtarını secret'a yazabilmek için SECRETS_PAT gerekir:
 #   GitHub → Settings → Developer settings → Fine-grained token,
 #   yalnızca bu depo, izin: "Secrets: Read and write". Secret adı: SECRETS_PAT
@@ -9,17 +11,43 @@ name: Meta anahtarlarını yenile
 on:
   schedule:
     - cron: "23 4 1,15 * *"
+  workflow_run:
+    workflows: ["Siteyi yayınla"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: write
+
+concurrency:
+  group: meta-yenile
+  cancel-in-progress: false
 
 jobs:
   yenile:
     runs-on: ubuntu-latest
     steps:
+      - name: Gerek var mı?
+        id: gerek
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" != "workflow_run" ]; then echo "devam=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "devam=0" >> "$GITHUB_OUTPUT"
+          SINIR=$(date -u -d '-10 days' +%Y-%m-%dT%H:%M:%SZ)
+          SON=""
+          for OLAY in workflow_dispatch schedule; do
+            T=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/meta_yenile.yml/runs?event=$OLAY&status=success&per_page=1" --jq '.workflow_runs[0].created_at // ""')
+            [[ "$T" > "$SON" ]] && SON="$T"
+          done
+          if [ -n "$SON" ] && [[ "$SON" > "$SINIR" ]]; then echo "Son yenileme $SON; gerek yok."; exit 0; fi
+          echo "::notice title=Meta anahtarları::Son yenileme ${SON:-yok}; yenileme başlatılıyor."
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/meta_yenile.yml/dispatches" -f ref=main
       - uses: actions/checkout@v4
+        if: steps.gerek.outputs.devam == '1'
       - name: Kontrol et ve yenile
+        if: steps.gerek.outputs.devam == '1'
         env:
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
           META_SAYFA_ADI: "Yürü Baba"
@@ -27,6 +55,7 @@ jobs:
           YENI_ANAHTAR: ${{ runner.temp }}/threads.txt
         run: python3 scripts/meta_yenile.py
       - name: Yeni Threads anahtarını kaydet
+        if: steps.gerek.outputs.devam == '1'
         env:
           GH_TOKEN: ${{ secrets.SECRETS_PAT }}
           DOSYA: ${{ runner.temp }}/threads.txt
