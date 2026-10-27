@@ -1,0 +1,18 @@
+# Threads anket sonuçlarını okur (salt okuma). Elle/dispatch.
+name: Anket sonucu
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  oku:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Threads anketlerini oku
+        env:
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+        run: python3 scripts/anket_sonuc.py
