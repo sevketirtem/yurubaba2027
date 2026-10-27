@@ -56,12 +56,19 @@ def main():
     son = bas + timedelta(days=1)
     params = {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": son.strftime("%Y-%m-%dT%H:%M:%SZ")}
 
+    yol = "stats/total"
     try:
-        toplam = iste(kod, token, "stats/total", params)
-        sayfalar = iste(kod, token, "stats/hits", {**params, "limit": 5})
+        toplam = iste(kod, token, yol, params)
+        yol = "stats/hits"
+        sayfalar = iste(kod, token, yol, {**params, "limit": 5})
     except urllib.error.HTTPError as e:
         govde = e.read().decode("utf-8", "replace")[:200]
-        print(f"::error title=Ziyaretçi raporu::GoatCounter {e.code}: {govde}")
+        print(f"::error title=Ziyaretçi raporu::GoatCounter {e.code} ({e.url} ← {yol}): {govde}")
+        try:
+            me = iste(kod, token, "me", {})
+            print(f"::notice title=Ziyaretçi raporu tanı::/me çalışıyor: {json.dumps(me)[:300]}")
+        except urllib.error.HTTPError as e2:
+            print(f"::notice title=Ziyaretçi raporu tanı::/me {e2.code}: {e2.read().decode('utf-8','replace')[:200]}")
         return 1
     except Exception as e:  # ağ hatası vb.
         print(f"::error title=Ziyaretçi raporu::{type(e).__name__}: {e}")
@@ -71,10 +78,10 @@ def main():
     satirlar = []
     for h in sayfalar.get("hits", [])[:5]:
         sayi = h.get("count", h.get("count_unique", 0))
-        ad = (h.get("title") or h.get("path") or "?").strip()
+        ad = re.sub(r"\s+·\s+(Hadi|Yürü) Baba.*$", "", (h.get("title") or h.get("path") or "?").strip())
         satirlar.append(f"{ad} ({h.get('path')}): {sayi}")
     ust = " | ".join(satirlar) if satirlar else "—"
-    print(f"::notice title=Ziyaretçi {kod} {gun.isoformat()}::Toplam {ziyaret} | En çok: {ust}")
+    print(f"::notice title=Ziyaretçi {kod} {gun.isoformat()}::Toplam {ziyaret} görüntüleme | En çok: {ust}")
 
     ozet = os.environ.get("GITHUB_STEP_SUMMARY")
     if ozet:
