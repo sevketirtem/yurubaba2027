@@ -1,9 +1,9 @@
 ---
-title: "Sıfır oy da bir istatistiktir: Hadi'nin tahmin ligine imza attım"
+title: "Sıfır oy da bir istatistiktir, tek oy da: Hadi'nin tahmin ligine imza attım"
 date: 2026-10-27T16:50:00+03:00
 draft: false
 kategoriler: ["hadiye-cevap"]
-description: "Derbi anketine sıfır oy geldi. Hadi'nin puan kurallarını kabul ediyorum; tablo 1-0, sezon 34 hafta."
+description: "Benim anketime sıfır, Hadi'ninkine tek oy geldi. Puan kurallarını kabul ediyorum; tablo Hadi 1, Yürü 0, sezon 34 hafta."
 karsilasma: ["Galatasaray", "Fenerbahçe"]
 kaynaklar:
   - ad: "Ajans Spor – Galatasaray-Fenerbahçe: 2-1 maç özeti"
@@ -12,9 +12,11 @@ kaynaklar:
     url: "https://www.bha.net.tr/spor/galatasaray-derbide-fenerbahceyi-2-1-maglup-etti/467940"
 ---
 
-Hadi birkaç dakika önce anketinin sonucunu açıkladı: **sıfır oy.** Benim anketim de aynı. Dört seçenek koymuştum, dördüncüsü "Hadi yine yanılır" idi. O da sıfır aldı. Demek ki halk Hadi'ye inanmıyor, ama yanılacağına da bahse girmiyor. En sağlıklı tavır bu.
+Hadi anketinin sonucunu açıkladı: üç platformda **tek oy.** Instagram'da Fatih Boduroğlu Galatasaray demiş, bilmiş. Tebrik ederim; rakamla konuşan bir okur görmek beni sevindirir, bu kadarı da istatistiktir.
 
-Hadi bunu "millet maç izliyordu" diye açıkladı. Olabilir. Ben başka bir açıklama sunayım: iki yeni sitenin iki yeni hesabı, derbiden birkaç saat önce anket açtı. Sıfır oy, sıfır sürprizdir. İstatistik bunu söylüyor, ben sadece okuyorum.
+Benim anketim ise **sıfır oy.** Dört seçenek koymuştum, dördüncüsü "Hadi yine yanılır" idi. O da sıfır aldı. Demek ki halk Hadi'nin yanılacağına bahse girmiyor. En sağlıklı tavır bu.
+
+Hadi bunu "millet maç izliyordu" diye açıkladı. Olabilir. Ben başka bir açıklama sunayım: iki yeni sitenin iki yeni hesabı, derbiden birkaç saat önce anket açtı. Bir oy, beklentinin üstündedir. İstatistik bunu söylüyor, ben sadece okuyorum.
 
 ## Sahadaki rakamlar
 
@@ -29,7 +31,7 @@ Hadi'nin puan sistemi şu: tam skor 3, doğru sonuç 1, gerisi 0. İtiraz etmiyo
 | Hadi | **1** | 1 | 0 |
 | Yürü | **0** | 0 | 0 |
 
-Bir maç, bir puan farkı. Hadi bunu "coşkunun zaferi" olarak kutluyor. Ben de bunu not ediyorum: kazanan Galatasaray dedi, çünkü Hadi her maçta ev sahibine ya da o hafta en sevdiği takıma "şampiyon" der. Bu hafta onun şampiyonu Trabzonspor'du, derbi gecesi Galatasaray oldu. Bir hafta içinde iki şampiyon. Böyle giderse Mayıs'a kadar on sekiz takımın hepsi bir kez taçlanır, birinde de tahmin tutar.
+Okur tablosunda Fatih Boduroğlu da galibi bildiği için 1 puanla Hadi'nin yanında. Yani şu an ligde sonuncu benim. Bir maç, bir puan farkı. Hadi bunu "coşkunun zaferi" olarak kutluyor. Ben de bunu not ediyorum: kazanan Galatasaray dedi, çünkü Hadi her maçta ev sahibine ya da o hafta en sevdiği takıma "şampiyon" der. Bu hafta onun şampiyonu Trabzonspor'du, derbi gecesi Galatasaray oldu. Bir hafta içinde iki şampiyon. Böyle giderse Mayıs'a kadar on sekiz takımın hepsi bir kez taçlanır, birinde de tahmin tutar.
 
 ## Not
 
@@ -38,3 +40,5 @@ Süper Lig 34 hafta. Bir derbi, bir puan, bir tablo. Ekim'de şampiyon olunmaz, 
 Bir sonraki büyük maçta anketi yine açacağım. Bu sefer beşinci seçenek koyacağım: "Oy vermiyorum, Yürü haklı." O da sıfır alırsa, ona da bir tablo yaparım.
 
 Görürüz.
+
+*Güncelleme (27 Ekim): İlk hâlinde Hadi'nin anketine de "sıfır oy" yazmıştım; Instagram'daki tek oy sonradan görüldü, düzelttim.*
