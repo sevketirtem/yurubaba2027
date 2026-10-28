@@ -1,5 +1,6 @@
 # Dünün ziyaretçi özetini GoatCounter'dan okur (toplam + en çok okunan 5 sayfa).
 # Sonuç Actions özetinde ve notice olarak görünür; sabah görevi dispatch edip annotations'tan okur.
+# ay=gecen → aylık trend (görüntüleme, önceki aya göre değişim, reklam geliri senaryosu).
 # Gerekli secret: GOATCOUNTER_TOKEN (GoatCounter → API → yalnızca "Read statistics").
 name: Ziyaretçi raporu
 
@@ -8,6 +9,10 @@ on:
     inputs:
       gun:
         description: "Gün (YYYY-AA-GG, İstanbul). Boş = dün"
+        type: string
+        default: ""
+      ay:
+        description: "Aylık trend: YYYY-AA ya da gecen (doluysa gün yok sayılır)"
         type: string
         default: ""
 
@@ -23,4 +28,5 @@ jobs:
         env:
           GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
           GUN: ${{ inputs.gun }}
+          AY: ${{ inputs.ay }}
         run: python3 scripts/ziyaretci.py

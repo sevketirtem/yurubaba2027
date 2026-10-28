@@ -7,6 +7,8 @@ Gerekenler:
   GOATCOUNTER_TOKEN  GoatCounter → API → "Read statistics" izinli anahtar (secret)
   GOATCOUNTER_KOD    hadibaba / yurubaba (yoksa hugo.toml'dan okunur)
   GUN                isteğe bağlı, YYYY-AA-GG (boş = dün)
+  AY                 isteğe bağlı, YYYY-AA ya da "gecen" → aylık trend (görüntüleme,
+                     önceki aya göre değişim, gelir senaryosu); GUN yok sayılır
 """
 import json
 import os
@@ -43,12 +45,108 @@ def iste(kod, token, yol, params):
         return json.load(yanit)
 
 
+# Aylık trend: Türkiye trafiğinde 1.000 görüntüleme başına tahmini AdSense geliri (USD)
+RPM_ALT, RPM_UST = 0.40, 1.50
+# Senaryo eşikleri (günlük ortalama görüntüleme; ~1,5 görüntüleme = 1 ziyaret)
+SENARYOLAR = [
+    (60, "Sabit (haftada ~100 ziyaret düzeyi)"),
+    (150, "Sabit → orta arası"),
+    (600, "Orta (günde ~100+ ziyaret)"),
+    (1500, "Orta → iyi arası"),
+    (float("inf"), "İyi (günde ~1.000 ziyaret)"),
+]
+
+
+def sade_ad(h):
+    return re.sub(r"\s+·\s+(Hadi|Yürü) Baba.*$", "", (h.get("title") or h.get("path") or "?").strip())
+
+
+def ay_araligi(yil, ay):
+    bas = date(yil, ay, 1)
+    son = date(yil + (ay == 12), ay % 12 + 1, 1)
+    return bas, son
+
+
+# Siteler 23 Ekim 2026'da açıldı; öncesi günlük ortalamayı düşürmesin
+LANSMAN = date(2026, 10, 23)
+
+
+def toplam_oku(kod, token, bas_gun, son_gun):
+    bas_gun = max(bas_gun, LANSMAN)
+    if bas_gun >= son_gun:
+        return 0, 1, None
+    bas = datetime.combine(bas_gun, time(0, 0), IST).astimezone(timezone.utc)
+    son = datetime.combine(son_gun, time(0, 0), IST).astimezone(timezone.utc)
+    simdi = datetime.now(timezone.utc)
+    if son > simdi:
+        son = simdi
+    params = {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": son.strftime("%Y-%m-%dT%H:%M:%SZ")}
+    gun_sayisi = max((son - bas).total_seconds() / 86400, 1 / 24)
+    return iste(kod, token, "stats/total", params).get("total", 0), gun_sayisi, params
+
+
+def aylik(kod, token, ay_str):
+    bugun = datetime.now(IST).date()
+    if ay_str.lower() in ("gecen", "geçen"):
+        ilk = bugun.replace(day=1) - timedelta(days=1)
+        yil, ay = ilk.year, ilk.month
+    else:
+        yil, ay = (int(x) for x in ay_str.split("-")[:2])
+    bas, son = ay_araligi(yil, ay)
+    if bas > bugun or son <= LANSMAN:
+        print(f"::warning title=Aylık trend::{yil}-{ay:02d} için veri yok (gelecek ay ya da lansman öncesi).")
+        return 0
+    onceki_bas = (bas - timedelta(days=1)).replace(day=1)
+
+    try:
+        bu_ay, gun, params = toplam_oku(kod, token, bas, son)
+        onceki, onceki_gun, _ = toplam_oku(kod, token, onceki_bas, bas)
+        sayfalar = iste(kod, token, "stats/hits", {**params, "limit": 3})
+    except urllib.error.HTTPError as e:
+        print(f"::error title=Aylık trend::GoatCounter {e.code}: {e.read().decode('utf-8','replace')[:200]}")
+        return 1
+    except Exception as e:
+        print(f"::error title=Aylık trend::{type(e).__name__}: {e}")
+        return 1
+
+    gunluk = bu_ay / gun
+    onceki_gunluk = onceki / onceki_gun if onceki else 0
+    if onceki_gunluk:
+        degisim = f"{(gunluk / onceki_gunluk - 1) * 100:+.0f}% (günlük ort., önceki ay {onceki_gunluk:.1f})"
+    else:
+        degisim = "önceki ay verisi yok"
+    senaryo = next(ad for esik, ad in SENARYOLAR if gunluk < esik)
+    aylik_tahmin = gunluk * 30.4
+    gelir_ay = (aylik_tahmin * RPM_ALT / 1000, aylik_tahmin * RPM_UST / 1000)
+    gelir_yil = (gelir_ay[0] * 12, gelir_ay[1] * 12)
+    eksik = " (ay sürüyor)" if son > bugun else ""
+    ust = " | ".join(
+        "{}: {}".format(sade_ad(h), h.get("count", 0)) for h in sayfalar.get("hits", [])[:3]
+    ) or "—"
+
+    metin = (
+        f"{yil}-{ay:02d}{eksik}: {bu_ay} görüntüleme, günde ort. {gunluk:.1f} | Değişim: {degisim} | "
+        f"Senaryo: {senaryo} | Bu hızla reklam geliri ≈ ayda {gelir_ay[0]:.2f}–{gelir_ay[1]:.2f} $, "
+        f"yılda {gelir_yil[0]:.0f}–{gelir_yil[1]:.0f} $ (RPM {RPM_ALT}–{RPM_UST} $) | En çok: {ust}"
+    )
+    print(f"::notice title=Aylık trend {kod} {yil}-{ay:02d}::{metin}")
+    ozet = os.environ.get("GITHUB_STEP_SUMMARY")
+    if ozet:
+        with open(ozet, "a", encoding="utf-8") as f:
+            f.write(f"## {kod} — {yil}-{ay:02d} aylık trend\n\n- {metin.replace(' | ', chr(10) + '- ')}\n")
+    return 0
+
+
 def main():
     token = os.environ.get("GOATCOUNTER_TOKEN", "").strip()
     kod = kod_bul()
     if not token or not kod:
         print("::warning title=Ziyaretçi raporu::GOATCOUNTER_TOKEN secret'ı ya da site kodu yok; rapor atlandı.")
         return 0
+
+    ay_str = os.environ.get("AY", "").strip()
+    if ay_str:
+        return aylik(kod, token, ay_str)
 
     gun_str = os.environ.get("GUN", "").strip()
     gun = date.fromisoformat(gun_str) if gun_str else datetime.now(IST).date() - timedelta(days=1)
