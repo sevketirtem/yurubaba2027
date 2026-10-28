@@ -79,7 +79,7 @@ def toplam_oku(kod, token, bas_gun, son_gun):
     son = datetime.combine(son_gun, time(0, 0), IST).astimezone(timezone.utc)
     simdi = datetime.now(timezone.utc)
     if son > simdi:
-        son = simdi
+        son = simdi.replace(minute=0, second=0, microsecond=0)  # API saat başı ister
     params = {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": son.strftime("%Y-%m-%dT%H:%M:%SZ")}
     gun_sayisi = max((son - bas).total_seconds() / 86400, 1 / 24)
     return iste(kod, token, "stats/total", params).get("total", 0), gun_sayisi, params
@@ -98,12 +98,15 @@ def aylik(kod, token, ay_str):
         return 0
     onceki_bas = (bas - timedelta(days=1)).replace(day=1)
 
+    adim = "bu ay toplam"
     try:
         bu_ay, gun, params = toplam_oku(kod, token, bas, son)
+        adim = "önceki ay toplam"
         onceki, onceki_gun, _ = toplam_oku(kod, token, onceki_bas, bas)
+        adim = "en çok okunanlar"
         sayfalar = iste(kod, token, "stats/hits", {**params, "limit": 3})
     except urllib.error.HTTPError as e:
-        print(f"::error title=Aylık trend::GoatCounter {e.code}: {e.read().decode('utf-8','replace')[:200]}")
+        print(f"::error title=Aylık trend::GoatCounter {e.code} ({adim}, {e.url}): {e.read().decode('utf-8','replace')[:200]}")
         return 1
     except Exception as e:
         print(f"::error title=Aylık trend::{type(e).__name__}: {e}")
