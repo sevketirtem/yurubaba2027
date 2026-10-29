@@ -1,4 +1,4 @@
-// Türk takımlarının Avrupa kupaları: maçlar ve lig aşaması sıraları. <section class="avrupa" data-api="…" data-mac="/mac/">.
+// Süper Lig takımlarının Avrupa kupaları: maçlar ve lig aşaması sıraları. <section class="avrupa" data-api="…" data-mac="/mac/">.
 (function () {
   "use strict";
   var H = window.HY, el = H.el, ad = H.ad;
@@ -50,7 +50,7 @@
           if (!k.maclar.length) b.appendChild(el("p", "empty", "Son bir hafta ve önümüzdeki iki haftada maç yok."));
           govde.appendChild(b);
         });
-        if (bos) govde.appendChild(el("p", "empty", "Şu an Avrupa kupalarında Türk takımı maçı ya da sırası yok."));
+        if (bos) govde.appendChild(el("p", "empty", "Şu an Avrupa kupalarında Süper Lig takımı maçı ya da sırası yok."));
         if (alt) alt.textContent = "Son güncelleme " + H.saat(v.guncellendi) + (canliVar ? " · canlı maçlar birkaç dakikada bir yenilenir" : "") +
           " · maça tıklayınca kadrolar ve istatistikler açılır";
         if (canliVar) setTimeout(yukle, 120000);

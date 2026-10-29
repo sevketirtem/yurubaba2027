@@ -1,9 +1,9 @@
 ---
-title: "Avrupa Kupalarında Türk Takımları"
-description: "Şampiyonlar Ligi, Avrupa Ligi ve Konferans Ligi'nde Türk takımlarının maçları, skorları ve sıraları."
+title: "Avrupa Kupalarında Süper Lig Takımları"
+description: "Şampiyonlar Ligi, Avrupa Ligi ve Konferans Ligi'nde Süper Lig takımlarının maçları, skorları ve sıraları."
 ---
 
-Avrupa'da tablo yalan söylemez. Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi: Türk takımlarının maçları ve kaçıncı sırada oldukları burada. Duygu değil, sıra.
+Avrupa'da tablo yalan söylemez. Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi: Süper Lig takımlarının maçları ve kaçıncı sırada oldukları burada. Duygu değil, sıra.
 
 {{< avrupa >}}
 

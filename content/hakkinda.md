@@ -2,7 +2,7 @@
 title: "Hakkında"
 ---
 
-Yürü Baba, Türk futbolunu sakin kafayla yorumlayan bir site. Takım tutmayız. Heyecanlanmayız da. Rakamlara bakarız, gerisi gürültü.
+Yürü Baba, Süper Lig'i ve futbolu sakin kafayla yorumlayan bir site. Takım tutmayız. Heyecanlanmayız da. Rakamlara bakarız, gerisi gürültü.
 
 **Burada ne bulursunuz?** Maç önü soğuk duş, maç sonu hesap kitap, transfer kulisinde "imza atılınca konuşuruz" ve karşı mahallenin pembe gözlüklülerine cevaplar.
 

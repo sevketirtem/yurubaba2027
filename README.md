@@ -2,7 +2,7 @@
 
 **Hadi'ye inanma, gerçekleri biz yazarız.** → [yurubaba.com](https://yurubaba.com)
 
-Türk futbolunu soğukkanlı ve istatistikle yorumlayan statik site. Sahnedeki rakibi: [Hadi Baba](https://github.com/sevketirtem/hadibaba).
+Süper Lig'i ve futbolu soğukkanlı ve istatistikle yorumlayan statik site. Sahnedeki rakibi: [Hadi Baba](https://github.com/sevketirtem/hadibaba).
 
 ## Teknik yapı
 

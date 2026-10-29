@@ -23,7 +23,7 @@ summaryLength = 40
 [params]
   yandexDogrulama = "87040e7c56f5c0e5"
   slogan = "Hadi'ye inanma, gerçekleri biz yazarız."
-  description = "Türk futbolunu soğukkanlı, istatistikle ve kuru mizahla yorumlayan site. Ekim'de şampiyon olunmaz."
+  description = "Süper Lig'i ve futbolu soğukkanlı, istatistikle ve kuru mizahla yorumlayan site. Ekim'de şampiyon olunmaz."
   # Tema renkleri: iki site aynı iskeleti, farklı renklerle kullanır
   accent = "#1f3a5f"
   accentInk = "#ffffff"

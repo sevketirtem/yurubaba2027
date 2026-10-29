@@ -62,7 +62,7 @@ def main():
     platformlar = {p.strip().lower() for p in ortam("PLATFORMLAR").split(",") if p.strip()}
     istendi = lambda p: not platformlar or p in platformlar  # noqa: E731
     etiketler = ortam("ETIKETLER", "#futbol")
-    ig_etiketler = ortam("IG_ETIKETLER", "#futbol #süperlig #türkfutbolu")
+    ig_etiketler = ortam("IG_ETIKETLER", "#futbol #süperlig")
 
     # 1. Adres
     mac_no, baslama = None, None

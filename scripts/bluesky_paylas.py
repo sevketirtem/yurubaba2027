@@ -27,7 +27,7 @@ Ortam değişkenleri:
 
   META_PAGE_TOKEN        Facebook Sayfa anahtarı (süresiz; Instagram da bununla)
   THREADS_TOKEN          Threads anahtarı (60 gün; meta_yenile.yml yeniler)
-  IG_ETIKETLER           Instagram etiketleri (varsayılan "#futbol #süperlig #türkfutbolu")
+  IG_ETIKETLER           Instagram etiketleri (varsayılan "#futbol #süperlig")
   META_SAYFA_ADI         Kullanıcı anahtarı birden çok Sayfa yönetiyorsa hangisi (ör. "Hadi Baba")
   META_KONTROL           "true" ise hiçbir şey paylaşmaz; Meta anahtarlarını kontrol eder
   META_YAZI              Bir yazı adresi verilirse yalnızca o yazı yalnızca Facebook,
@@ -322,7 +322,7 @@ def main():
 
     page_token = os.environ.get("META_PAGE_TOKEN", "").strip()
     th_token = os.environ.get("THREADS_TOKEN", "").strip()
-    ig_etiketler = os.environ.get("IG_ETIKETLER", "").strip() or "#futbol #süperlig #türkfutbolu"
+    ig_etiketler = os.environ.get("IG_ETIKETLER", "").strip() or "#futbol #süperlig"
     sayfa_adi = os.environ.get("META_SAYFA_ADI", "").strip() or None
 
     if os.environ.get("META_KONTROL", "").lower() == "true":
