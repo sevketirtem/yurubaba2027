@@ -93,8 +93,11 @@ def _resim(yol):
 def gorsel(cikti, istem, kim="ikisi", en_boy="1:1"):
     model = model_sec()
     kimler = ["hadi", "yuru"] if kim == "ikisi" else [kim]
-    parcalar = [_resim(_ref("hadi")), _resim(_ref("yuru"))]
-    metin = " ".join(TARIF[k] for k in kimler) + " SAHNE: " + istem + " " + KURALLAR
+    parcalar = [_resim(_ref(k)) for k in kimler]
+    tarif = {k: TARIF[k].replace(" (1. referans resim)", "").replace(" (2. referans resim)", "") for k in kimler}
+    tek = "" if len(kimler) > 1 else " Görselde YALNIZCA bu tek karakter olsun, başka kişi yok."
+    metin = ("Referans resimdeki karakter(ler): " + " ".join(tarif.values()) + tek + " SAHNE: " + istem + " "
+             + KURALLAR + " Görselde hiçbir harf, kelime, rakam veya başlık yazısı olmasın.")
     parcalar.append({"text": metin})
     govde = {
         "contents": [{"role": "user", "parts": parcalar}],
