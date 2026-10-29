@@ -10,7 +10,7 @@ on:
     - cron: "37 * * * *"
 
 permissions:
-  contents: read
+  contents: write  # Gemini kart sahnelerini depoya geri kaydetmek için
   pages: write
   id-token: write
 
@@ -42,18 +42,31 @@ jobs:
       # Skor API'sinden verileri çeker, maç sayfalarını üretir (scripts/veri_cek.py); hata derlemeyi durdurmaz
       - name: Verileri çek
         run: python3 scripts/veri_cek.py
+      # Yeni yazılara Gemini ile karakter sahnesi (scripts/kart_sahne.py); hata derlemeyi durdurmaz
+      - name: Kart sahnesi (Gemini)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python3 scripts/kart_sahne.py || true
       # Paylaşım kartı görselleri her derlemede yeniden üretilmesin (sayfa başına 2 görsel)
       - name: Hugo görsel önbelleği
         uses: actions/cache@v4
         with:
           path: resources/_gen
-          key: hugo-gen-${{ hashFiles('assets/kart/**', 'layouts/partials/kart.html') }}-${{ github.run_id }}
-          restore-keys: hugo-gen-${{ hashFiles('assets/kart/**', 'layouts/partials/kart.html') }}-
+          key: hugo-gen-${{ hashFiles('assets/kart/*.png', 'assets/kart/*.ttf', 'layouts/partials/kart.html') }}-${{ github.run_id }}
+          restore-keys: hugo-gen-${{ hashFiles('assets/kart/*.png', 'assets/kart/*.ttf', 'layouts/partials/kart.html') }}-
       - name: Pages ayarlarını al
         id: pages
         uses: actions/configure-pages@v5
       - name: Siteyi derle
         run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+      # Üretilen sahneler depoya kaydedilsin (sonraki derlemelerde yeniden üretilmez; GITHUB_TOKEN push'u yeni iş tetiklemez)
+      - name: Sahneleri depoya kaydet
+        continue-on-error: true
+        run: |
+          git add assets/kart/sahne
+          git diff --cached --quiet && exit 0
+          git -c user.name="Claude (Hadi-Yürü ekibi)" -c user.email="noreply@anthropic.com" commit -qm "Kart sahnesi (Gemini)"
+          git pull -q --rebase --autostash origin main && git push -q origin HEAD:main
       - name: Çıktıyı yükle
         uses: actions/upload-pages-artifact@v3
         with:

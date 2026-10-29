@@ -16,13 +16,24 @@
 {{- $vurgu := site.Params.accent -}}
 {{- $etiketRenk := site.Params.kartEtiket | default "#ffffff" -}}
 
-{{- $kare := resources.Get "kart/zemin-kare.png" | images.Filter
+{{- /* Gemini sahnesi varsa (assets/kart/sahne/<slug>.png, scripts/kart_sahne.py) yuvarlak avatarın içine yerleşir */ -}}
+{{- $zKare := resources.Get "kart/zemin-kare.png" -}}
+{{- $zGenis := resources.Get "kart/zemin-genis.png" -}}
+{{- if eq .Section "posts" }}{{ with .File }}{{ with resources.Get (printf "kart/sahne/%s.png" .ContentBaseName) -}}
+  {{- $maske := resources.Get "kart/maske-daire.png" -}}
+  {{- $s1 := .Process "fill 270x270 Center png" | images.Filter (images.Mask $maske) -}}
+  {{- $s2 := .Process "fill 300x300 Center png" | images.Filter (images.Mask $maske) -}}
+  {{- $zKare = $zKare | images.Filter (images.Overlay $s1 782 782) -}}
+  {{- $zGenis = $zGenis | images.Filter (images.Overlay $s2 52 142) -}}
+{{- end }}{{ end }}{{ end -}}
+
+{{- $kare := $zKare | images.Filter
     (images.Text $etiket (dict "color" $etiketRenk "size" 34 "x" 70 "y" 70 "font" $font))
     (images.Text $baslik (dict "color" "#ffffff" "size" 70 "linespacing" 14 "x" 70 "y" 140 "font" $font))
     (images.Text $alan (dict "color" $vurgu "size" 40 "x" 70 "y" 992 "font" $font)) -}}
 {{- $kare = $kare.Process "jpg q88" -}}
 
-{{- $genis := resources.Get "kart/zemin-genis.png" | images.Filter
+{{- $genis := $zGenis | images.Filter
     (images.Text $etiket (dict "color" $etiketRenk "size" 26 "x" 400 "y" 60 "font" $font))
     (images.Text $baslik (dict "color" "#ffffff" "size" 48 "linespacing" 10 "x" 400 "y" 110 "font" $font))
     (images.Text $alan (dict "color" $vurgu "size" 30 "x" 40 "y" 578 "font" $font)) -}}
