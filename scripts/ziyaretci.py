@@ -157,9 +157,23 @@ def main():
     son = bas + timedelta(days=1)
     params = {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": son.strftime("%Y-%m-%dT%H:%M:%SZ")}
 
+    # GoatCounter bazen saatli aralığa 404 veriyor (30 Ekim); sırayla başka biçimler denenir
+    denemeler = [params,
+                 {"start": gun.isoformat(), "end": gun.isoformat()},
+                 {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": (son - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")}]
     yol = "stats/total"
     try:
-        toplam = iste(kod, token, yol, params)
+        for n, p in enumerate(denemeler):
+            try:
+                toplam = iste(kod, token, "stats/total", p)
+                params = p
+                if n:
+                    print(f"::notice title=Ziyaretçi raporu::{n + 1}. biçim çalıştı: {p}")
+                break
+            except urllib.error.HTTPError as e:
+                if e.code != 404 or n == len(denemeler) - 1:
+                    raise
+                print(f"::warning title=Ziyaretçi raporu::{p} → 404, başka biçim deneniyor")
         yol = "stats/hits"
         sayfalar = iste(kod, token, yol, {**params, "limit": 5})
     except urllib.error.HTTPError as e:
