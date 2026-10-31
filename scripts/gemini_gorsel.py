@@ -14,6 +14,7 @@ Ortam değişkenleri:
 Kurallar: yalnızca kendi karakterlerimiz; gerçek kişi yüzü, kulüp arması, forma, stadyum, yazı/logo yok.
 """
 import base64, json, os, sys, urllib.error, urllib.request
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 API = "https://generativelanguage.googleapis.com/v1beta"
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,21 +34,11 @@ def notice(baslik, mesaj):
 
 
 def _istek(yol, govde=None):
-    anahtar = os.environ["GEMINI_API_KEY"]
-    veri = json.dumps(govde).encode() if govde is not None else None
-    req = urllib.request.Request(
-        f"{API}/{yol}", data=veri, method="POST" if veri else "GET",
-        headers={"Content-Type": "application/json", "x-goog-api-key": anahtar},
-    )
+    import gapi  # Vertex (deneme kredisi) önce, AI Studio yedek
     try:
-        with urllib.request.urlopen(req, timeout=180) as r:
-            return json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        try:
-            mesaj = json.loads(e.read()).get("error", {}).get("message", "")
-        except Exception:  # noqa: BLE001
-            mesaj = ""
-        raise RuntimeError(f"Gemini {yol.split('?')[0]} -> HTTP {e.code}: {mesaj[:300]}") from None
+        return gapi.istek(yol, govde, 180)
+    except gapi.HataHTTP as e:
+        raise RuntimeError(f"Gemini {yol.split('?')[0]} -> {e}") from None
 
 
 def modeller():
@@ -126,8 +117,9 @@ def gorsel(cikti, istem, kim="ikisi", en_boy="1:1"):
 
 
 def main():
-    if not os.environ.get("GEMINI_API_KEY"):
-        notice("Gemini", "GEMINI_API_KEY yok; atlandı")
+    import gapi
+    if not gapi.var_mi():
+        notice("Gemini", "GEMINI_API_KEY / GOOGLE_VERTEX_TOKEN yok; atlandı")
         return 0
     mod = sys.argv[1] if len(sys.argv) > 1 else "liste"
     if mod == "liste":

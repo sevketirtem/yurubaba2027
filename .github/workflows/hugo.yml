@@ -32,6 +32,14 @@ jobs:
           sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: Depoyu al
         uses: actions/checkout@v4
+      - name: Vertex AI kimliği (deneme kredisi; anahtarsız)
+        id: vx
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/1001418254189/locations/global/workloadIdentityPools/github/providers/github-oidc
+          service_account: vertex-github@hadi-yuru-ses.iam.gserviceaccount.com
+          token_format: access_token
       # Yakın tarihli maçların ayrıntıları çalışmalar arasında saklanır (maç bitince de sayfada kalsın)
       - name: Maç ayrıntıları önbelleği
         uses: actions/cache@v4
@@ -46,6 +54,7 @@ jobs:
       - name: Kart sahnesi (Gemini)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_VERTEX_TOKEN: ${{ steps.vx.outputs.access_token }}
         run: python3 scripts/kart_sahne.py || true
       # Paylaşım kartı görselleri her derlemede yeniden üretilmesin (sayfa başına 2 görsel)
       - name: Hugo görsel önbelleği

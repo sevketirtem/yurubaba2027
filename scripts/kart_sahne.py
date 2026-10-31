@@ -49,8 +49,8 @@ def istem(baslik, ozet):
 
 
 def main():
-    if not os.environ.get("GEMINI_API_KEY"):
-        print("GEMINI_API_KEY yok; kart sahnesi atlandı")
+    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_VERTEX_TOKEN")):
+        print("GEMINI_API_KEY / GOOGLE_VERTEX_TOKEN yok; kart sahnesi atlandı")
         return 0
     os.makedirs(SAHNE, exist_ok=True)
     sinir = int(os.environ.get("KART_SAHNE_SINIR", "3"))
