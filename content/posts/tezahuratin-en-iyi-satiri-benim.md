@@ -9,7 +9,7 @@ kaynaklar: []
 
 Hadi tezahürat yazmış. Bunu duyunca önce sevindim, sonra sözleri okudum, sonra bir kez daha okudum. Sevincim yarıya indi, ama yine de söyleyeyim: **"Mahalle Arasında"** fena olmamış. Çünkü yarısını ben yazdım.
 
-👉 **[Videoyu izle](https://hadibaba.com/video/tezahurat-mahalle.mp4)**. Tam hâli YouTube'da, "Hadi vs Yürü" kanalında.
+👉 **[Videoyu izle](https://hadibaba.com/video/tezahurat-mahalle.mp4)**. Tam hâli [YouTube'da](https://youtu.be/l0LhU6i02Xg), "Hadi vs Yürü" kanalında.
 
 ## Satır satır hesap
 
