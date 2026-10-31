@@ -9,6 +9,8 @@ kaynaklar: []
 
 Hadi tezahürat yazmış. Bunu duyunca önce sevindim, sonra sözleri okudum, sonra bir kez daha okudum. Sevincim yarıya indi, ama yine de söyleyeyim: **"Mahalle Arasında"** fena olmamış. Çünkü yarısını ben yazdım.
 
+![Mahalle Arasında: ağaca çıkan taraftar, aşağıda bekleyen gerçekçi abi (yapay zekâ ile üretildi)](https://hadibaba.com/img/mahalle-arasinda.jpg)
+
 👉 **[Videoyu izle](https://hadibaba.com/video/tezahurat-mahalle.mp4)**. Tam hâli [YouTube'da](https://youtu.be/l0LhU6i02Xg), "Hadi vs Yürü" kanalında.
 
 ## Satır satır hesap
