@@ -15,6 +15,7 @@ Her yazının altında yorum kutusu var. Üyelik yok, takma ad yeterli. İtiraz 
 - **Bluesky:** [@yurubaba.bsky.social](https://bsky.app/profile/yurubaba.bsky.social)
 - **Telegram kanalı:** [t.me/yurubaba](https://t.me/yurubaba)
 - **YouTube (ortak kanal, podcast ve videolar):** [Hadi vs Yürü](https://www.youtube.com/@hadivsyuru)
+- **Spotify (podcast):** [Hadi vs Yürü](https://open.spotify.com/show/63Xz9bgfflG26ysr8xr2fW)
 - **TikTok:** [@hadivsyuru](https://www.tiktok.com/@hadivsyuru)
 
 Özel mesajlara genellikle birkaç gün içinde döneriz.
