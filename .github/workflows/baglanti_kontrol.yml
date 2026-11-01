@@ -1,0 +1,17 @@
+# Claude ortamından erişilemeyen adresleri kontrol etmek için: adresi açar, durum kodunu ve ilk satırları notice olarak yazar.
+name: Bağlantı kontrolü
+on:
+  workflow_dispatch:
+    inputs:
+      url: {description: "Adres(ler), boşlukla ayrılmış", type: string, required: true}
+jobs:
+  kontrol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: |
+          for u in ${{ inputs.url }}; do
+            kod=$(curl -sL -o /tmp/s -w '%{http_code} %{url_effective}' -A 'Mozilla/5.0' "$u")
+            ozet=$(head -c 300 /tmp/s | tr '\n' ' ' | sed 's/::/ /g')
+            echo "::notice title=$u::$kod | $ozet"
+          done
