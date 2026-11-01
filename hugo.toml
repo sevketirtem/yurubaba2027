@@ -70,6 +70,13 @@ summaryLength = 40
     ad = "Telegram"
     url = "https://t.me/yurubaba"
 
+  [[params.sosyal]]
+    ad = "YouTube"
+    url = "https://www.youtube.com/@hadivsyuru"
+  [[params.sosyal]]
+    ad = "TikTok"
+    url = "https://www.tiktok.com/@hadivsyuru"
+
 [menus]
   [[menus.main]]
     name = "Canlı Skor"
