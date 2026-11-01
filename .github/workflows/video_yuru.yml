@@ -1,0 +1,45 @@
+# Hadi'nin hesaplarında paylaşılan videoları (günlük atışma, tezahürat filmleri, kampanyalar)
+# Yürü Baba'nın Facebook Sayfası, Instagram (Reels) ve Threads'ine de koyar. Ayrıntı: scripts/video_yuru.py
+name: Videoları Yürü'de paylaş
+on:
+  workflow_run:
+    workflows: ["Siteyi yayınla"]
+    types: [completed]
+  schedule:
+    - cron: "23 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run: {description: "Deneme: paylaşmadan ne yapacağını göster", type: boolean, default: true}
+      adet: {description: "Bu çalıştırmada en fazla kaç video", type: string, default: "3"}
+permissions:
+  contents: write
+concurrency:
+  group: video-yuru
+  cancel-in-progress: false
+jobs:
+  paylas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hadi deposundan video bilgilerini al
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse https://github.com/sevketirtem/hadibaba /tmp/hb
+          git -C /tmp/hb sparse-checkout set video/senaryolar video/kampanya video/tezahurat
+          ls /tmp/hb/video
+      - name: Paylaş
+        env:
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_SAYFA_ADI: "Yürü Baba"
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          VIDEO_ADET: ${{ inputs.adet || '3' }}
+        run: python scripts/video_yuru.py /tmp/hb
+      - name: Kaydı depoya yaz
+        run: |
+          [ -f video/paylasildi.txt ] || exit 0
+          git config user.name "Claude (Hadi-Yürü ekibi)"; git config user.email "noreply@anthropic.com"
+          git add video/paylasildi.txt
+          git diff --cached --quiet && exit 0
+          git commit -qm "Yürü video paylaşım kaydı [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin main && break; sleep 5; done
