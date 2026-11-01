@@ -56,6 +56,10 @@ def _vertex(yol, govde, timeout):
     if yol.startswith("interactions"):
         return _cagir(f"{VX}/v1beta1/projects/{PROJE}/locations/global/{yol}", govde, b, timeout)
     if yol.startswith("models/"):
+        # Vertex her contents öğesinde role ister (AI Studio istemez) → eksikse "user" ekle
+        if isinstance(govde, dict) and isinstance(govde.get("contents"), list):
+            govde = {**govde, "contents": [({"role": "user", **c} if isinstance(c, dict) and not c.get("role") else c)
+                                           for c in govde["contents"]]}
         return _cagir(f"{VX}/v1/projects/{PROJE}/locations/global/publishers/google/{yol}", govde, b, timeout)
     raise ValueError(f"Bilinmeyen yol: {yol}")
 
