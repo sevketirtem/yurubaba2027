@@ -82,7 +82,17 @@ def toplam_oku(kod, token, bas_gun, son_gun):
         son = simdi.replace(minute=0, second=0, microsecond=0)  # API saat başı ister
     params = {"start": bas.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": son.strftime("%Y-%m-%dT%H:%M:%SZ")}
     gun_sayisi = max((son - bas).total_seconds() / 86400, 1 / 24)
-    return iste(kod, token, "stats/total", params).get("total", 0), gun_sayisi, params
+    # GoatCounter bazen saatli aralığa 404 veriyor (günlük raporda da görüldü) → başka biçimler dene
+    denemeler = [params,
+                 {"start": bas_gun.isoformat(), "end": (son_gun - timedelta(days=1)).isoformat()},
+                 {"start": params["start"], "end": (son - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ")}]
+    for n, p in enumerate(denemeler):
+        try:
+            return iste(kod, token, "stats/total", p).get("total", 0), gun_sayisi, p
+        except urllib.error.HTTPError as e:
+            if e.code != 404 or n == len(denemeler) - 1:
+                raise
+            print(f"::warning title=Aylık trend::{p} → 404, başka biçim deneniyor")
 
 
 def aylik(kod, token, ay_str):
