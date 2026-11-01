@@ -135,6 +135,7 @@ def main():
     notice("Yürü video", f"Bekleyen {len(bekleyen)} video; bu çalıştırmada en fazla {adet}: "
            + ", ".join(a for a, _ in bekleyen[:adet]))
 
+    os.makedirs(os.path.dirname(KAYIT), exist_ok=True)
     for a, eksik in bekleyen[:adet]:
         s = harita[a]
         url = f"{SITE}/{a}.mp4"
