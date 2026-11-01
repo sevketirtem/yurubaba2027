@@ -7,3 +7,12 @@ tezahurat-mahalle threads
 tezahurat-hikaye facebook
 tezahurat-hikaye instagram
 tezahurat-hikaye threads
+tezahurat-olsun-baba facebook
+tezahurat-olsun-baba instagram
+tezahurat-olsun-baba threads
+tezahurat-bizim-hikaye facebook
+tezahurat-bizim-hikaye instagram
+tezahurat-bizim-hikaye threads
+kampanya-izleyici-1 facebook
+kampanya-izleyici-1 instagram
+kampanya-izleyici-1 threads
