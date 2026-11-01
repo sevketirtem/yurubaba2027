@@ -6,6 +6,19 @@
     <p class="meta"><a class="tag" href="{{ "maclar/" | relURL }}">Maçlar</a></p>
     <h1>{{ .LinkTitle }}</h1>
   </header>
+  {{- /* İki takımın diğer maçı (ilk yarı / rövanş). Arayan çoğu zaman bu haftaki maçı arar; diğer maç
+         yakındaysa (2 gün önce – 7 gün sonra) ve bu sayfa değilse öne çıkar. */ -}}
+  {{- with .File }}{{ with site.GetPage (printf "/%s%s-%s" .Dir $p.depSlug $p.evSlug) }}
+    {{- $simdi := now }}{{ $o := time.AsTime .Params.tarih }}{{ $bu := time.AsTime $p.tarih }}
+    {{- $fark := $o.Sub $simdi }}{{ $buFark := $bu.Sub $simdi }}
+    {{- $yakin := and (gt $fark.Hours -48.0) (lt $fark.Hours 168.0) }}
+    {{- $buYakin := and (gt $buFark.Hours -48.0) (lt $buFark.Hours 168.0) }}
+    <p class="diger-mac{{ if and $yakin (not $buYakin) }} one-cikan{{ end }}">
+      {{ if and $yakin (not $buYakin) }}⚡ Bu haftaki maçı mı arıyorsun?{{ else }}🔁 İki takımın diğer maçı:{{ end }}
+      <a href="{{ .RelPermalink }}"><strong>{{ .LinkTitle }}</strong></a>
+      ({{ partial "trtarih.html" (dict "t" .Params.tarih "bicim" "tam") }}{{ if and (in (slice "FT" "AET" "PEN") .Params.durum) (ne .Params.evGol nil) }}, {{ .Params.evGol }}-{{ .Params.depGol }}{{ end }}) →
+    </p>
+  {{- end }}{{ end }}
   <div class="prose"><p>{{ printf site.Params.macGiris .LinkTitle (partial "trtarih.html" (dict "t" $p.tarih "bicim" "tam")) | safeHTML }}</p></div>
   <section class="skor macsayfa"{{ with site.Params.skorAPI }} data-api="{{ . }}"{{ end }} data-id="{{ $p.macId }}" data-canli="{{ "canli/" | relURL }}" data-mac="{{ "mac/" | relURL }}" aria-label="{{ .LinkTitle }} maç ayrıntısı">
     <div class="mac-govde">{{ partial "mac-govde.html" (dict "p" $p "d" $d) }}</div>

@@ -231,3 +231,6 @@ table.puan td.takim a:hover { text-decoration: underline; text-decoration-color:
 .maclistesi .hafta-baslik:first-child { margin-top: 0; }
 .mac-tabela a { color: inherit; text-decoration: none; }
 .mac-tabela a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+
+.diger-mac { margin: 10px 0 16px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 15px; }
+.diger-mac.one-cikan { border: 2px solid currentColor; font-size: 17px; font-weight: 600; }
