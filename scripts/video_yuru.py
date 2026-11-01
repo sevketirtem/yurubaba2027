@@ -127,6 +127,8 @@ def main():
         eksik = [p for p in platformlar if f"{a} {p}" not in yapilan]
         if eksik:
             bekleyen.append((a, eksik))
+    # Bugünün maç önü videosu bekleyemez → öne al
+    bekleyen.sort(key=lambda x: x[0] != bugun)
     if not bekleyen:
         notice("Yürü video", "Paylaşılacak yeni video yok")
         return
