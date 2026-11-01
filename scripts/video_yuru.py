@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(KOK, "scripts"))
 import meta  # noqa: E402
+import kanallar  # noqa: E402
 
 KAYIT = os.path.join(KOK, "video", "paylasildi.txt")
 ETIKETLER = "#futbol #süperlig #hadibaba #yurubaba"
@@ -41,6 +42,8 @@ def metin(s, uzun=True):
             f"🔥 Hadi: {y['hadi']}" if y.get("hadi") else "",
             f"🧮 Yürü: {y['yuru']}" if y.get("yuru") else "") if x))
     parcalar.append(ETIKETLER)
+    if not uzun:
+        parcalar.append(kanallar.kisa())
     return "\n\n".join(p for p in parcalar if p)
 
 
@@ -145,7 +148,7 @@ def main():
                 continue
             try:
                 if p == "facebook":
-                    kimlik = facebook_video(k["page_token"], k["page_id"], url, metin(s), f"Hadi vs Yürü: {s.get('mac', a)}")
+                    kimlik = facebook_video(k["page_token"], k["page_id"], url, metin(s) + "\n\n" + kanallar.uzun(), f"Hadi vs Yürü: {s.get('mac', a)}")
                 elif p == "instagram":
                     kimlik = instagram_reels(k["page_token"], k["ig_id"], url, metin(s, uzun=False))
                 else:

@@ -171,8 +171,10 @@ def metinler(yazi, aciklama, etiketler, ig_etiketler, alan):
     govde = f"{baslik}\n\n{aciklama}" if aciklama else baslik
     ilk_etiket = (etiketler.split() or [""])[0]  # Threads gönderi başına tek konu etiketi alır
     th_ek = f"\n\n{ilk_etiket}" if ilk_etiket else ""
+    import kanallar
+    th_ek = f"\n\n{kanallar.kisa()}{th_ek}"
     return {
-        "facebook": f"{govde}\n\n{etiketler}".strip(),
-        "instagram": f"{govde}\n\n👉 Yazının tamamı profildeki bağlantıda: {alan}\n\n{ig_etiketler}".strip(),
+        "facebook": f"{govde}\n\n{etiketler}\n\n{kanallar.uzun()}".strip(),
+        "instagram": f"{govde}\n\n👉 Yazının tamamı profildeki bağlantıda: {alan}\n{kanallar.kisa()}\n\n{ig_etiketler}".strip(),
         "threads": kisalt(govde, THREADS_SINIRI - len(th_ek)) + th_ek,
     }

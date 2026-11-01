@@ -224,6 +224,8 @@ def telegram_mesaji(yazi, aciklama):
     if aciklama:
         satirlar.append(html.escape(aciklama, quote=False))
     satirlar.append(f'👉 <a href="{html.escape(yazi["adres"], quote=True)}">Yazının tamamı</a>')
+    import kanallar
+    satirlar.append(kanallar.telegram_html())
     return "\n\n".join(satirlar)
 
 

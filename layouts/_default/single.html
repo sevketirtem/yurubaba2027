@@ -17,6 +17,12 @@
       <ul>{{ range . }}<li><a href="{{ .url }}" rel="noopener nofollow">{{ .ad }}</a></li>{{ end }}</ul>
     </aside>
     {{ end }}
+    {{ with site.Params.sosyal }}
+    <aside class="sources takip">
+      <h2>Bizi takip et</h2>
+      <p>{{ range $i, $s := . }}{{ if $i }} · {{ end }}<a href="{{ $s.url }}" rel="noopener">{{ $s.ad }}</a>{{ end }}</p>
+    </aside>
+    {{ end }}
     {{ partial "comments.html" . }}
   {{ end }}
 </article>
