@@ -2,7 +2,7 @@
 
 Kaynak: hadibaba deposu (iş akışı seyrek klonlar). Video orada `video/paylasildi.txt`'te "<anahtar> instagram"
 olarak kayıtlıysa https://hadibaba.com/video/<anahtar>.mp4 yayındadır. Açıklama, anahtarın bilgi JSON'undan
-(video/senaryolar, video/tezahurat, video/kampanya; "tarih" alanı = anahtar) üretilir.
+(video/senaryolar, video/tezahurat, video/kampanya, video/tahmin-ligi, video/aytis; "tarih" alanı = anahtar) üretilir.
 Günlük atışma videoları (YYYY-AA-GG) yalnızca kendi günü paylaşılır (maç önü; ertesi gün bayat).
 Kayıt: bu depoda video/paylasildi.txt ("<anahtar> facebook|instagram|threads").
 
@@ -78,7 +78,8 @@ def threads_video(th_token, video_url, aciklama):
 def bilgiler(hb):
     harita = {}
     for yol in (glob.glob(f"{hb}/video/senaryolar/*.json") + glob.glob(f"{hb}/video/tezahurat/*.json")
-                + glob.glob(f"{hb}/video/kampanya/*.json")):
+                + glob.glob(f"{hb}/video/kampanya/*.json") + glob.glob(f"{hb}/video/tahmin-ligi/*.json")
+                + glob.glob(f"{hb}/video/aytis/*.json")):
         try:
             j = json.load(open(yol, encoding="utf-8"))
         except Exception:  # noqa: BLE001

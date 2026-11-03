@@ -6,7 +6,7 @@ on:
     workflows: ["Siteyi yayınla"]
     types: [completed]
   schedule:
-    - cron: "23 */2 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       dry_run: {description: "Deneme: paylaşmadan ne yapacağını göster", type: boolean, default: true}
@@ -28,7 +28,7 @@ jobs:
       - name: Hadi deposundan video bilgilerini al
         run: |
           git clone -q --depth 1 --filter=blob:none --sparse https://github.com/sevketirtem/hadibaba /tmp/hb
-          git -C /tmp/hb sparse-checkout set video/senaryolar video/kampanya video/tezahurat
+          git -C /tmp/hb sparse-checkout set video/senaryolar video/kampanya video/tezahurat video/tahmin-ligi video/aytis
           ls /tmp/hb/video
       - name: Paylaş
         env:
