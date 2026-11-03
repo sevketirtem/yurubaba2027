@@ -28,3 +28,6 @@ tahmin-ligi-2 threads
 2026-11-03-gs-stuttgart facebook
 2026-11-03-gs-stuttgart instagram
 2026-11-03-gs-stuttgart threads
+aytis-1 facebook
+aytis-1 instagram
+aytis-1 threads
