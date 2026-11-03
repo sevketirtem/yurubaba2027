@@ -34,3 +34,6 @@ aytis-1 threads
 aytis-2 facebook
 aytis-2 instagram
 aytis-2 threads
+2026-11-03-gs-stuttgart-sonu facebook
+2026-11-03-gs-stuttgart-sonu instagram
+2026-11-03-gs-stuttgart-sonu threads
