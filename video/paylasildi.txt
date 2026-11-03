@@ -25,3 +25,6 @@ tahmin-ligi-1 threads
 tahmin-ligi-2 facebook
 tahmin-ligi-2 instagram
 tahmin-ligi-2 threads
+2026-11-03-gs-stuttgart facebook
+2026-11-03-gs-stuttgart instagram
+2026-11-03-gs-stuttgart threads
