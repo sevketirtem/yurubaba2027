@@ -31,3 +31,6 @@ tahmin-ligi-2 threads
 aytis-1 facebook
 aytis-1 instagram
 aytis-1 threads
+aytis-2 facebook
+aytis-2 instagram
+aytis-2 threads
