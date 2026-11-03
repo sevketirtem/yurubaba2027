@@ -16,3 +16,12 @@ tezahurat-bizim-hikaye threads
 kampanya-izleyici-1 facebook
 kampanya-izleyici-1 instagram
 kampanya-izleyici-1 threads
+2026-11-03 facebook
+2026-11-03 instagram
+2026-11-03 threads
+tahmin-ligi-1 facebook
+tahmin-ligi-1 instagram
+tahmin-ligi-1 threads
+tahmin-ligi-2 facebook
+tahmin-ligi-2 instagram
+tahmin-ligi-2 threads
