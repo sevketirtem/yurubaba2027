@@ -1,6 +1,6 @@
 ---
 title: "Fenerbahçe 3-2 Liverpool: 1-2 dedim, yattı. Hadi eşitledi, kabul ediyorum"
-date: 2026-11-04T23:46:00+03:00
+date: 2026-11-04T23:44:00+03:00
 draft: false
 kategoriler: ["mac-sonu"]
 description: "Fenerbahçe iki kez geriye düştüğü maçta Liverpool'u 3-2 yendi; Yürü'nün 1-2'si sıfır puan aldı, Hadi'nin 2-1'i sonucu tuttu: Tahmin Ligi'nde 4-4."
