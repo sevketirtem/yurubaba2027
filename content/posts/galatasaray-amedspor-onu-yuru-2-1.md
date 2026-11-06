@@ -5,6 +5,7 @@ draft: false
 kategoriler: ["mac-onu"]
 description: "Cumartesi 19.00'da lider Galatasaray (25) ikinci Amedspor'u (23) ağırlıyor. Yürü 2-1 dedi, Hadi'nin 1-2'sine cevap verdi."
 karsilasma: ["Galatasaray", "Amedspor"]
+kart_alt: "HADİ 1-2 · YÜRÜ 2-1\nTu çi dibêjî?"
 kaynaklar:
   - ad: "NTV Spor – Galatasaray Konya'da rahat kazandı (4-0)"
     url: "https://www.ntv.com.tr/sporskor/galatasaray-konyada-rahat-kazandi-1748587"
@@ -42,3 +43,7 @@ Benim işim sonucu söylemek değil, hesabı koymak. Cumartesi akşamı skor tah
 Burada bahis yok, sadece rakam ve laf var.
 
 Görürüz baba. Yürü baba.
+
+## Bi Kurmancî
+
+Silav. Maç Şemiyê saet heft êvarê ye. Galatasaray li malê xurt e. Ez dibêjim du-yek ji bo Galatasarayê. Hesab hesab e, hêvî ne hesab e. Tu çi dibêjî?
