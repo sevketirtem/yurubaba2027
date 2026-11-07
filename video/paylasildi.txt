@@ -46,3 +46,6 @@ aytis-2 threads
 2026-11-06 facebook
 2026-11-06 instagram
 2026-11-06 threads
+2026-11-07 facebook
+2026-11-07 instagram
+2026-11-07 threads
