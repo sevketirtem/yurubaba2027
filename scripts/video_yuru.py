@@ -4,7 +4,7 @@ Kaynak: hadibaba deposu (iş akışı seyrek klonlar). Video orada `video/paylas
 olarak kayıtlıysa https://hadibaba.com/video/<anahtar>.mp4 yayındadır. Açıklama, anahtarın bilgi JSON'undan
 (video/senaryolar, video/tezahurat, video/kampanya, video/tahmin-ligi, video/aytis; "tarih" alanı = anahtar) üretilir.
 Günlük atışma videoları (YYYY-AA-GG) yalnızca kendi günü paylaşılır (maç önü; ertesi gün bayat).
-Kayıt: bu depoda video/paylasildi.txt ("<anahtar> facebook|instagram|threads").
+Kayıt: bu depoda video/paylasildi.txt ("<anahtar> facebook|instagram|threads|facebook-story|instagram-story"). Hikâyeler yalnızca Hadi listesindeki son 3 video için.
 
 Kullanım: python3 scripts/video_yuru.py <hadibaba_klasoru>
 Ortam: META_PAGE_TOKEN, META_SAYFA_ADI ("Yürü Baba"), THREADS_TOKEN, VIDEO_ADET (çalıştırma başına en fazla
@@ -64,6 +64,32 @@ def facebook_video(page_token, page_id, video_url, aciklama, baslik):
     }).get("id")
 
 
+def instagram_story(page_token, ig_id, video_url):
+    kap = meta.istek("POST", f"{meta.GRAPH}/{ig_id}/media", {
+        "media_type": "STORIES", "video_url": video_url, "access_token": page_token,
+    })["id"]
+    meta._bekle(f"{meta.GRAPH}/{kap}", "status_code", page_token, sure=300)
+    return meta.istek("POST", f"{meta.GRAPH}/{ig_id}/media_publish", {
+        "creation_id": kap, "access_token": page_token,
+    }).get("id")
+
+
+def facebook_story(page_token, page_id, video_url):
+    """Facebook Sayfası video hikâyesi: başlat → file_url ile yükle → bitir."""
+    import urllib.request
+    url = f"https://graph.facebook.com/v25.0/{page_id}/video_stories"
+    r = meta.istek("POST", url, {"upload_phase": "start", "access_token": page_token})
+    vid, yukle = r["video_id"], r["upload_url"]
+    istek = urllib.request.Request(yukle, method="POST", headers={
+        "Authorization": f"OAuth {page_token}", "file_url": video_url})
+    with urllib.request.urlopen(istek, timeout=300) as y:
+        yanit = y.read().decode()
+    if '"success":true' not in yanit.replace(" ", ""):
+        raise RuntimeError(f"hikâye yükleme yanıtı: {yanit[:200]}")
+    son = meta.istek("POST", url, {"upload_phase": "finish", "video_id": vid, "access_token": page_token})
+    return son.get("post_id") or vid
+
+
 def threads_video(th_token, video_url, aciklama):
     kap = meta.istek("POST", f"{meta.THREADS}/me/threads", {
         "media_type": "VIDEO", "video_url": video_url, "text": aciklama[:meta.THREADS_SINIRI],
@@ -77,9 +103,7 @@ def threads_video(th_token, video_url, aciklama):
 
 def bilgiler(hb):
     harita = {}
-    for yol in (glob.glob(f"{hb}/video/senaryolar/*.json") + glob.glob(f"{hb}/video/tezahurat/*.json")
-                + glob.glob(f"{hb}/video/kampanya/*.json") + glob.glob(f"{hb}/video/tahmin-ligi/*.json")
-                + glob.glob(f"{hb}/video/aytis/*.json")):
+    for yol in glob.glob(f"{hb}/video/**/*.json", recursive=True):
         try:
             j = json.load(open(yol, encoding="utf-8"))
         except Exception:  # noqa: BLE001
@@ -121,6 +145,7 @@ def main():
         notice("Yürü video", "Hiçbir platform anahtarı yok", "warning")
         return
 
+    son_uc = set(adaylar[-3:])
     bekleyen = []
     for a in adaylar:
         if re.fullmatch(r"\d{4}-\d{2}-\d{2}", a) and a != bugun:
@@ -128,7 +153,10 @@ def main():
         if a not in harita:
             notice("Yürü video", f"{a}: bilgi JSON'u bulunamadı, atlandı", "warning")
             continue
-        eksik = [p for p in platformlar if f"{a} {p}" not in yapilan]
+        pl = list(platformlar)
+        if a in son_uc:  # hikâyeler yalnızca en yeni videolar için (eski videolar yığılmasın)
+            pl += [x for x in ("facebook-story", "instagram-story") if x.split("-")[0] in platformlar]
+        eksik = [p for p in pl if f"{a} {p}" not in yapilan]
         if eksik:
             bekleyen.append((a, eksik))
     # Bugünün maç önü videosu bekleyemez → öne al
@@ -150,6 +178,10 @@ def main():
             try:
                 if p == "facebook":
                     kimlik = facebook_video(k["page_token"], k["page_id"], url, metin(s) + "\n\n" + kanallar.uzun(), f"Hadi vs Yürü: {s.get('mac', a)}")
+                elif p == "facebook-story":
+                    kimlik = facebook_story(k["page_token"], k["page_id"], url)
+                elif p == "instagram-story":
+                    kimlik = instagram_story(k["page_token"], k["ig_id"], url)
                 elif p == "instagram":
                     kimlik = instagram_reels(k["page_token"], k["ig_id"], url, metin(s, uzun=False))
                 else:

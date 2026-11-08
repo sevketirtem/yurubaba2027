@@ -28,7 +28,7 @@ jobs:
       - name: Hadi deposundan video bilgilerini al
         run: |
           git clone -q --depth 1 --filter=blob:none --sparse https://github.com/sevketirtem/hadibaba /tmp/hb
-          git -C /tmp/hb sparse-checkout set video/senaryolar video/kampanya video/tezahurat video/tahmin-ligi video/aytis
+          git -C /tmp/hb sparse-checkout set video
           ls /tmp/hb/video
       - name: Paylaş
         env:
