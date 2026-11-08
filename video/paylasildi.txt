@@ -64,3 +64,13 @@ canli-kesit-gs-amed-3 instagram
 canli-kesit-gs-amed-3 threads
 canli-kesit-gs-amed-3 facebook-story
 canli-kesit-gs-amed-3 instagram-story
+canli-kesit-gs-amed-2 facebook
+canli-kesit-gs-amed-2 instagram
+canli-kesit-gs-amed-2 threads
+canli-kesit-gs-amed-2 facebook-story
+canli-kesit-gs-amed-2 instagram-story
+canli-kesit-gs-amed-4 facebook
+canli-kesit-gs-amed-4 instagram
+canli-kesit-gs-amed-4 threads
+canli-kesit-gs-amed-4 facebook-story
+canli-kesit-gs-amed-4 instagram-story
