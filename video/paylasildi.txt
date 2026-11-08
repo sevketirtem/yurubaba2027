@@ -52,3 +52,15 @@ aytis-2 threads
 2026-11-08 facebook
 2026-11-08 instagram
 2026-11-08 threads
+2026-11-08 facebook-story
+2026-11-08 instagram-story
+canli-kesit-gs-amed-1 facebook
+canli-kesit-gs-amed-1 instagram
+canli-kesit-gs-amed-1 threads
+canli-kesit-gs-amed-1 facebook-story
+canli-kesit-gs-amed-1 instagram-story
+canli-kesit-gs-amed-3 facebook
+canli-kesit-gs-amed-3 instagram
+canli-kesit-gs-amed-3 threads
+canli-kesit-gs-amed-3 facebook-story
+canli-kesit-gs-amed-3 instagram-story
