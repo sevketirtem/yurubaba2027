@@ -94,11 +94,12 @@ def main():
     bugun = datetime.now(IST).date().isoformat()
     harita = bilgiler(hb)
 
-    # Hadi'nin Instagram'ında yayınlanmış videolar, sırayla
+    # Hadi'nin hesaplarında yayınlanmış videolar, sırayla
     adaylar = []
     for s in satirlar(f"{hb}/video/paylasildi.txt"):
         anahtar, _, platform = s.rpartition(" ")
-        if platform == "instagram" and anahtar not in adaylar:
+        # Hadi'nin herhangi bir Meta/Threads paylaşımı başarılıysa video yayındadır; Yürü Hadi'nin Instagram'ına bağlı kalmaz
+        if platform in ("instagram", "facebook", "threads") and anahtar not in adaylar:
             adaylar.append(anahtar)
     yapilan = set(satirlar(KAYIT))
     platformlar = []
