@@ -178,3 +178,60 @@ def metinler(yazi, aciklama, etiketler, ig_etiketler, alan):
         "instagram": f"{govde}\n\n👉 Yazının tamamı profildeki bağlantıda: {alan}\n{kanallar.kisa()}\n\n{ig_etiketler}".strip(),
         "threads": kisalt(govde, THREADS_SINIRI - len(th_ek)) + th_ek,
     }
+
+# ---------------------------------------------------------------- Hikâyeler (Story)
+# Her paylaşım ayrıca Facebook Sayfası ve Instagram hikâyesi olarak da gider. En iyi çaba: hikâye
+# başarısız olursa asıl paylaşım etkilenmez, yalnızca uyarı yazılır.
+
+def _uyari(baslik, e):
+    print(f"::warning title={baslik}::{e}", flush=True)
+
+
+def instagram_hikaye(page_token, ig_id, medya_url, video=False):
+    alan = "video_url" if video else "image_url"
+    kap = istek("POST", f"{GRAPH}/{ig_id}/media", {
+        "media_type": "STORIES", alan: medya_url, "access_token": page_token,
+    })["id"]
+    _bekle(f"{GRAPH}/{kap}", "status_code", page_token, sure=300 if video else 90)
+    return istek("POST", f"{GRAPH}/{ig_id}/media_publish", {"creation_id": kap, "access_token": page_token}).get("id")
+
+
+def facebook_hikaye_foto(page_token, page_id, gorsel_url):
+    f = istek("POST", f"{GRAPH}/{page_id}/photos", {"url": gorsel_url, "published": "false", "access_token": page_token})["id"]
+    r = istek("POST", f"{GRAPH}/{page_id}/photo_stories", {"photo_id": f, "access_token": page_token})
+    return r.get("post_id") or f
+
+
+def facebook_hikaye_video(page_token, page_id, video_url):
+    """Sayfa video hikâyesi: başlat → file_url ile yükle → bitir."""
+    import urllib.request
+    url = f"{GRAPH}/{page_id}/video_stories"
+    r = istek("POST", url, {"upload_phase": "start", "access_token": page_token})
+    vid = r["video_id"]
+    ist = urllib.request.Request(r["upload_url"], method="POST",
+                                 headers={"Authorization": f"OAuth {page_token}", "file_url": video_url})
+    with urllib.request.urlopen(ist, timeout=300) as y:
+        yanit = y.read().decode()
+    if '"success":true' not in yanit.replace(" ", ""):
+        raise RuntimeError(f"hikâye yükleme yanıtı: {yanit[:200]}")
+    son = istek("POST", url, {"upload_phase": "finish", "video_id": vid, "access_token": page_token})
+    return son.get("post_id") or vid
+
+
+def instagram_paylas_hikayeli(page_token, ig_id, gorsel_url, aciklama):
+    r = instagram_paylas(page_token, ig_id, gorsel_url, aciklama)
+    try:
+        instagram_hikaye(page_token, ig_id, gorsel_url)
+    except Exception as e:  # noqa: BLE001
+        _uyari("Instagram hikâyesi", e)
+    return r
+
+
+def facebook_paylas_hikayeli(page_token, page_id, metin, link, gorsel_url=None):
+    r = facebook_paylas(page_token, page_id, metin, link)
+    if gorsel_url:
+        try:
+            facebook_hikaye_foto(page_token, page_id, gorsel_url)
+        except Exception as e:  # noqa: BLE001
+            _uyari("Facebook hikâyesi", e)
+    return r

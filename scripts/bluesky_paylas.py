@@ -287,10 +287,10 @@ def meta_gonder(y, bilgi, aciklama, etiketler, ig_etiketler, page_token, th_toke
     hedefler = []
     if page_token and kimlik:
         pt = kimlik["page_token"]
-        hedefler.append(("Facebook", lambda: meta.facebook_paylas(pt, kimlik["page_id"], m["facebook"], y["adres"])))
+        hedefler.append(("Facebook", lambda: meta.facebook_paylas_hikayeli(pt, kimlik["page_id"], m["facebook"], y["adres"], bilgi.get("kare"))))
         if kimlik.get("ig_id"):
             if bilgi.get("kare"):
-                hedefler.append(("Instagram", lambda: meta.instagram_paylas(pt, kimlik["ig_id"], bilgi["kare"], m["instagram"])))
+                hedefler.append(("Instagram", lambda: meta.instagram_paylas_hikayeli(pt, kimlik["ig_id"], bilgi["kare"], m["instagram"])))
             else:
                 print(f"::warning title=Instagram atlandı::{y['adres']} | sayfada kare kart görseli yok")
     if th_token:

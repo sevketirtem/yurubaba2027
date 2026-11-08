@@ -64,32 +64,6 @@ def facebook_video(page_token, page_id, video_url, aciklama, baslik):
     }).get("id")
 
 
-def instagram_story(page_token, ig_id, video_url):
-    kap = meta.istek("POST", f"{meta.GRAPH}/{ig_id}/media", {
-        "media_type": "STORIES", "video_url": video_url, "access_token": page_token,
-    })["id"]
-    meta._bekle(f"{meta.GRAPH}/{kap}", "status_code", page_token, sure=300)
-    return meta.istek("POST", f"{meta.GRAPH}/{ig_id}/media_publish", {
-        "creation_id": kap, "access_token": page_token,
-    }).get("id")
-
-
-def facebook_story(page_token, page_id, video_url):
-    """Facebook Sayfası video hikâyesi: başlat → file_url ile yükle → bitir."""
-    import urllib.request
-    url = f"https://graph.facebook.com/v25.0/{page_id}/video_stories"
-    r = meta.istek("POST", url, {"upload_phase": "start", "access_token": page_token})
-    vid, yukle = r["video_id"], r["upload_url"]
-    istek = urllib.request.Request(yukle, method="POST", headers={
-        "Authorization": f"OAuth {page_token}", "file_url": video_url})
-    with urllib.request.urlopen(istek, timeout=300) as y:
-        yanit = y.read().decode()
-    if '"success":true' not in yanit.replace(" ", ""):
-        raise RuntimeError(f"hikâye yükleme yanıtı: {yanit[:200]}")
-    son = meta.istek("POST", url, {"upload_phase": "finish", "video_id": vid, "access_token": page_token})
-    return son.get("post_id") or vid
-
-
 def threads_video(th_token, video_url, aciklama):
     kap = meta.istek("POST", f"{meta.THREADS}/me/threads", {
         "media_type": "VIDEO", "video_url": video_url, "text": aciklama[:meta.THREADS_SINIRI],
@@ -179,9 +153,9 @@ def main():
                 if p == "facebook":
                     kimlik = facebook_video(k["page_token"], k["page_id"], url, metin(s) + "\n\n" + kanallar.uzun(), f"Hadi vs Yürü: {s.get('mac', a)}")
                 elif p == "facebook-story":
-                    kimlik = facebook_story(k["page_token"], k["page_id"], url)
+                    kimlik = meta.facebook_hikaye_video(k["page_token"], k["page_id"], url)
                 elif p == "instagram-story":
-                    kimlik = instagram_story(k["page_token"], k["ig_id"], url)
+                    kimlik = meta.instagram_hikaye(k["page_token"], k["ig_id"], url, video=True)
                 elif p == "instagram":
                     kimlik = instagram_reels(k["page_token"], k["ig_id"], url, metin(s, uzun=False))
                 else:

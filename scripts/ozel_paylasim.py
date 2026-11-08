@@ -163,11 +163,11 @@ def main():
         try:
             k = meta.sayfa_kimlikleri(page_token, ortam("META_SAYFA_ADI") or None)
             if istendi("facebook"):
-                hedefler.append(("Facebook", lambda: meta.facebook_paylas(k["page_token"], k["page_id"],
-                                                                         f"{metin}\n\n{etiketler}".strip(), adres)))
+                hedefler.append(("Facebook", lambda: meta.facebook_paylas_hikayeli(k["page_token"], k["page_id"],
+                                                                         f"{metin}\n\n{etiketler}".strip(), adres, bilgi.get("kare"))))
             if istendi("instagram") and k.get("ig_id") and bilgi.get("kare"):
                 ig_metin = f"{metin}\n\n👉 Bağlantı profilde: {alan}\n\n{ig_etiketler}".strip()
-                hedefler.append(("Instagram", lambda: meta.instagram_paylas(k["page_token"], k["ig_id"],
+                hedefler.append(("Instagram", lambda: meta.instagram_paylas_hikayeli(k["page_token"], k["ig_id"],
                                                                            bilgi["kare"], ig_metin)))
         except Exception as e:  # noqa: BLE001
             print(f"::warning title=Facebook/Instagram atlandı::{e}")
