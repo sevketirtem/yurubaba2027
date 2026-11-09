@@ -89,3 +89,13 @@ anma-10-kasim instagram
 anma-10-kasim threads
 anma-10-kasim facebook-story
 anma-10-kasim instagram-story
+anma-10-kasim-kk facebook
+anma-10-kasim-kk instagram
+anma-10-kasim-kk threads
+anma-10-kasim-kk facebook-story
+anma-10-kasim-kk instagram-story
+anma-10-kasim-ku facebook
+anma-10-kasim-ku instagram
+anma-10-kasim-ku threads
+anma-10-kasim-ku facebook-story
+anma-10-kasim-ku instagram-story
