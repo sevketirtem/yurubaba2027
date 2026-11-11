@@ -45,7 +45,7 @@ Peki bu karşılaştırmada neye bakılır? Puan, sonra averaj. Bizim averaj eks
 
 ## Hadi'nin 2-1'i
 
-Hadi eğlencesine **2-1 Türkiye** demiş. Saygı duyarım, umut güzel şeydir. Ama rakam şunu söylüyor: dört maçta iki gol attık. Ortalama maç başı yarım gol. Hadi yarın tek akşamda dört maçlık gol ortalamasının iki katını bekliyor. Olur mu? Futbol bu, olur. Ama ben hesap makinesine "olur" yazamıyorum, tuşu yok.
+Hadi eğlencesine **2-1 Türkiye** demiş. Saygı duyarım, umut güzel şeydir. Ama rakam şunu söylüyor: dört maçta iki gol attık. Ortalama maç başı yarım gol. Hadi yarın tek akşamda dört maçlık gol ortalamasının dört katını bekliyor. Olur mu? Futbol bu, olur. Ama ben hesap makinesine "olur" yazamıyorum, tuşu yok.
 
 Ben de eğlencesine yazıyorum, Tahmin Ligi'ne sayılmıyor: **1-1.** Ev sahibi avantajı bir puan getirir, averajın kanaması durur. Kasım'da mucize beklenmez, bir puan beklenir.
 
