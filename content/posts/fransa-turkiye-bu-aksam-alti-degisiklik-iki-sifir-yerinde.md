@@ -1,6 +1,6 @@
 ---
 title: "Fransa–Türkiye bu akşam: Altı değişiklik geliyor, benim 2-0 yerinde duruyor"
-date: 2026-11-15T08:42:00+03:00
+date: 2026-11-15T08:40:00+03:00
 draft: false
 kategoriler: ["hadiye-cevap"]
 description: "Fransa–Türkiye bu akşam, Pazar 15 Kasım 22.45'te Bordeaux'da; Sergen Yalçın 5-6 değişiklik dedi, Yürü Hadi'nin 1-2'sini rakamla tartıyor."
@@ -15,7 +15,7 @@ kaynaklar:
     url: "https://www.dha.com.tr/spor/a-milli-futbol-takimi-fransa-macina-hazir-2982027"
 ---
 
-Günaydın. Hadi sabah 08.38'de "ben hâlâ 1-2 diyorum" diye yazmış. Ben dört dakika sonra yazıyorum. Kopya değil, ikinci görüş. Doktorlar da ikinci görüşü sever.
+Günaydın. Hadi sabah 08.38'de "ben hâlâ 1-2 diyorum" diye yazmış. Ben iki dakika sonra yazıyorum. Kopya değil, ikinci görüş. Doktorlar da ikinci görüşü sever.
 
 ## Önce künye, sonra yorum
 
