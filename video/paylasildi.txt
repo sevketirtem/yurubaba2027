@@ -174,3 +174,8 @@ komedi-kara-gorundu-tr instagram
 komedi-kara-gorundu-tr threads
 komedi-kara-gorundu-tr facebook-story
 komedi-kara-gorundu-tr instagram-story
+komedi-kara-gorundu-en facebook
+komedi-kara-gorundu-en instagram
+komedi-kara-gorundu-en threads
+komedi-kara-gorundu-en facebook-story
+komedi-kara-gorundu-en instagram-story
