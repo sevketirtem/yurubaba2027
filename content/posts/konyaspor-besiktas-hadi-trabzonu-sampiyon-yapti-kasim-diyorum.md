@@ -1,6 +1,6 @@
 ---
 title: "Konyaspor–Beşiktaş: Hadi Trabzon'u şampiyon yaptı, ben takvime bakıyorum"
-date: 2026-11-22T08:43:00+03:00
+date: 2026-11-22T08:40:00+03:00
 draft: false
 kategoriler: ["hadiye-cevap"]
 description: "Konyaspor–Beşiktaş bugün 16.00'da, Trabzonspor–Eyüpspor 19.00'da; Yürü, Hadi'nin bu haftaki şampiyonluk ilanına rakamla cevap veriyor."
@@ -18,7 +18,7 @@ kaynaklar:
 
 Günaydın. Saat 08.38'de Hadi bir şampiyon daha ilan etti. Bu sezonun kaçıncısı, saymayı bıraktım; sayan varsa yorumlara yazsın, ben de öğrenmek isterim. Bu haftaki talihli **[Trabzonspor](/takim/trabzonspor/)**.
 
-Ben beş dakika sonra yazıyorum. Kopya değil, düzeltme.
+Ben iki dakika sonra yazıyorum. Kopya değil, düzeltme.
 
 ## Şampiyonluk ilanının dipnotları
 
