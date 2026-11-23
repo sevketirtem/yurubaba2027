@@ -30,6 +30,8 @@ Oyuna giren bir santrfor, dokuz dakikada üç gol. Kariyerinin ilk hat-trick'i. 
 
 Bir not daha: 2-2 olduğunda tahminim ekranda bir sonuç olarak duruyordu. Dört dakika sürdü.
 
+Hadi'nin tahmin geçmişine bakalım. Trabzon'a 4-0 dedi, 1-0 bitti. Konya'ya 1-3 dedi, 2-4 bitti. Bu akşam 3-1 dedi, 4-2 bitti. Üç maçta üç kez galibi bildi, sıfır kez skoru. Galibi bulmak bir yetenek, skoru bulmak başka bir yetenek. Hadi'de şimdilik birincisi var.
+
 ## Evde aslan, yine
 
 Sabah yazdığım tablo bu akşam daha da keskinleşti. Başakşehir evinde 7 maçta **16 puan** topladı, toplam puanı **20**. Yani puanlarının beşte dördü bu stattan. [Fenerbahçe](/takim/fenerbahce/) ve [Kocaelispor](/takim/kocaelispor/) ile aynı puandalar. Çorum 16'da kaldı. Goller ve istatistikler [maçın sayfasında](/maclar/2026-27/basaksehir-corum-fk/), puan durumu [canlı sayfada](/canli/).
