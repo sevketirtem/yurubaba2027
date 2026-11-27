@@ -23,7 +23,7 @@ Pazartesi Başakşehir, salı Galatasaray, çarşamba Fenerbahçe, perşembe Tra
 Bu akşam saat **20.00'de** Rize'de **[Rizespor](/takim/rizespor/)**–Kasımpaşa var. Hadi rakamlarla gelmiş, sağ olsun. Ben de aynı rakamlara bakıyorum, başka bir şey görüyorum:
 
 - Kasımpaşa **12 maçta 5 beraberlik** yaptı. Ligin en çok berabere kalan takımı bu.
-- Tek yenilgisi var, doğru. Ama **12 maçta 19 gol**; maç başına bir buçuk gol bile değil.
+- Tek yenilgisi var, doğru. Ama **12 maçta 19 gol**; maç başına bir buçuk gol civarı, şampiyon temposu değil.
 - Geçen hafta Alanyaspor'u **2-1** yendi. Galibiyet golü **90+1'de**. Yani 90 dakika boyunca maç berabereydi.
 - Rizespor evinde, **17 puanda**. Geçen hafta Diyarbakır'dan **2-0** kazanıp döndü, Ali Sowe iki gol attı.
 
