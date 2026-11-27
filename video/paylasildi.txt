@@ -223,3 +223,8 @@ tahmin-ligi-3 instagram
 tahmin-ligi-3 threads
 tahmin-ligi-3 facebook-story
 tahmin-ligi-3 instagram-story
+2026-11-27 facebook
+2026-11-27 instagram
+2026-11-27 threads
+2026-11-27 facebook-story
+2026-11-27 instagram-story
