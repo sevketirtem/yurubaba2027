@@ -218,3 +218,8 @@ aytis-5 facebook-story
 2026-11-26 threads
 2026-11-26 facebook-story
 2026-11-26 instagram-story
+tahmin-ligi-3 facebook
+tahmin-ligi-3 instagram
+tahmin-ligi-3 threads
+tahmin-ligi-3 facebook-story
+tahmin-ligi-3 instagram-story
